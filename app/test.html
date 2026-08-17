@@ -127,6 +127,18 @@ document.getElementById("fr").onload = function () {
   });
   t("el isométrico llega al 80 % al final de R1", () =>
     eq(T.sesionDe("2026-08-30").pct, 80));
+  t("el isométrico NO se reinicia al empezar R2", () =>
+    eq(T.sesionDe("2026-08-31").pct, 80));
+  t("el isométrico sigue al 80 % en el último día de R5", () =>
+    eq(T.sesionDe("2026-10-25").pct, 80));
+  t("ningún día de R2 a R5 baja del 80 %", () => {
+    let f = "2026-08-31", bajos = [];
+    while (T.dias(f, "2026-10-25") >= 0) {
+      if (T.sesionDe(f).pct < 80) bajos.push(f);
+      f = T.suma(f, 1);
+    }
+    return bajos.length ? bajos.length + " días por debajo, p.ej. " + bajos[0] : true;
+  });
 
   /* ── puertas y desfase ──────────────────────────────────── */
   t("prolongar R1 una semana mantiene el 1 de septiembre en R1", () => {

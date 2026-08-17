@@ -137,7 +137,9 @@ function sesionDe(fecha) {
   const base = D.micro[info.b.id][wd(fecha)];
   const r = S.reg[fecha] || {};
   const dol = (r.manana === undefined || r.manana === null) ? null : r.manana;
-  const iso_pct = D.iso[Math.min(Math.max(info.n - 1, 0), D.iso.length - 1)];
+  /* cada bloque lleva su progresion: R1 sube de 50 a 80, el resto mantiene 80 */
+  const tabla = info.b.iso || D.iso;
+  const iso_pct = tabla[Math.min(Math.max(info.n - 1, 0), tabla.length - 1)];
   let secs = JSON.parse(JSON.stringify(base.secciones));
   let recorte = null;
 

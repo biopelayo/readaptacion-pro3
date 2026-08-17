@@ -409,5 +409,13 @@ NUTRICION = {
 }
 MOMENTOS = ["Desayuno", "Media mañana", "Comida", "Post-entreno", "Merienda", "Cena"]
 
-# progresion del isometrico dentro de cada bloque (dia del bloque -> %)
+# Progresion del isometrico de aductor.
+# R1 es el bloque que RECUPERA la tolerancia: sube de 50 a 80 en sus 14 dias.
+# De R2 en adelante el trabajo pesado pasa al Copenhagen y a la fuerza, asi que
+# el isometrico se queda en 80 como activacion y mantenimiento. Reiniciarlo a 50
+# en cada bloque seria un retroceso.
 ISO = [50, 50, 50, 60, 60, 60, 60, 70, 70, 70, 70, 80, 80, 80]
+ISO_MANT = [80] * 21
+
+for _b in BLOQUES:
+    _b["iso"] = ISO if _b["id"] == "R1" else ISO_MANT
