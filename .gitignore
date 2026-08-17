@@ -16,3 +16,7 @@ _check.pdf
 .env
 *_secret*
 credenciales*
+
+# Despliegue
+node_modules/
+.wrangler/
