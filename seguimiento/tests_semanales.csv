@@ -1,0 +1,18 @@
+semana,fecha_test,dolor_reposo_0_10,dolor_tos_0_10,squeeze_0_10,squeeze_max_0_10,isometrico_pct_tolerado,copenhagen_reps_izq,copenhagen_reps_der,carrera_min,sprint_max_pct,COD_45_90_180,dia_siguiente,decision,notas
+S1,2026-06-29,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S2,2026-07-06,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S3,2026-07-13,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S4,2026-07-20,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S5,2026-07-27,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S6,2026-08-03,,,,,,,,,,,,sin registro,"plan original: no se rellenó"
+S7,2026-08-10,,,,,,,,,,,,parón,"10 días sin entrenar del 8 al 16 de agosto"
+R1-s1,2026-08-23,,,,,,,,,,,,subir/repetir/bajar,
+R1-s2,2026-08-30,,,,,,,,,,,,PUERTA R1 a R2,
+R2-s1,2026-09-06,,,,,,,,,,,,subir/repetir/bajar,
+R2-s2,2026-09-13,,,,,,,,,,,,PUERTA R2 a R3,
+R3-s1,2026-09-20,,,,,,,,,,,,subir/repetir/bajar,
+R3-s2,2026-09-27,,,,,,,,,,,,PUERTA R3 a R4,
+R4-s1,2026-10-04,,,,,,,,,,,,subir/repetir/bajar,
+R4-s2,2026-10-11,,,,,,,,,,,,PUERTA R4 a R5,
+R5-s1,2026-10-18,,,,,,,,,,,,subir/repetir/bajar,
+R5-s2,2026-10-25,,,,,,,,,,,,cierre del bloque,

@@ -1,0 +1,18 @@
+# Imágenes en resolución completa: 85 MB. En el repo van las de imagenes/web (2 MB),
+# que es lo que necesita el generador de la app.
+imagenes/ejercicios/
+
+# Fuentes originales, pesadas y no necesarias para reconstruir nada
+fuentes/manual_pro_3_real_oviedo.pdf
+fuentes/paginas_manual_oviedo/
+
+# Temporales de verificación
+_v_*.pdf
+_check.pdf
+*.tmp
+
+# Nunca, bajo ningún concepto
+*.key
+.env
+*_secret*
+credenciales*

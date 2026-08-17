@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pruebas · app de readaptación</title>
+<style>
+body{background:#0A1733;color:#C9D4EA;font-family:"Segoe UI",system-ui,sans-serif;
+  margin:0;padding:20px;font-size:14px}
+h1{font-size:20px;color:#E3C468;margin:0 0 4px}
+.sub{color:#8C9BBB;margin:0 0 18px;font-size:13px}
+.t{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.07);display:grid;
+  grid-template-columns:64px 1fr;gap:12px;align-items:baseline}
+.ok{color:#54B37A;font-weight:700}
+.ko{color:#E2685A;font-weight:700}
+.det{color:#8C9BBB;font-size:12px;font-family:"IBM Plex Mono",monospace}
+#res{margin-top:18px;padding:14px;border-radius:10px;font-size:16px;font-weight:700}
+#res.good{background:rgba(84,179,122,.18);color:#8fd6a8}
+#res.bad{background:rgba(226,104,90,.18);color:#f0b6ac}
+iframe{width:390px;height:600px;border:1px solid #333;margin-top:20px;border-radius:8px}
+</style>
+</head>
+<body>
+<h1>Pruebas de la app</h1>
+<p class="sub">Comprueba que la lógica se ejecuta y da los resultados correctos, no solo que la pantalla se ve bien.</p>
+<div id="out"></div>
+<div id="res"></div>
+<iframe id="fr" src="index.html"></iframe>
+
+<script>
+const out = document.getElementById("out");
+let ok = 0, ko = 0;
+
+function t(nombre, fn) {
+  let paso = false, detalle = "";
+  try {
+    const r = fn();
+    paso = r === true || r === undefined;
+    if (r !== true && r !== undefined) detalle = String(r);
+  } catch (e) { detalle = e.message; }
+  paso ? ok++ : ko++;
+  out.innerHTML += '<div class="t"><span class="' + (paso ? "ok" : "ko") + '">' +
+    (paso ? "PASA" : "FALLA") + '</span><span>' + nombre +
+    (detalle ? ' <span class="det">' + detalle + '</span>' : '') + '</span></div>';
+}
+const eq = (a, b, msg) => a === b ? true : (msg || "") + " esperado " + b + ", obtenido " + a;
+
+document.getElementById("fr").onload = function () {
+  const w = this.contentWindow, T = w.__t;
+  if (!T) { document.getElementById("res").className = "bad";
+            document.getElementById("res").textContent = "La app no expone __t"; return; }
+
+  /* ── fechas ─────────────────────────────────────────────── */
+  t("iso() respeta la hora local", () =>
+    eq(T.iso(new Date(2026, 7, 17)), "2026-08-17"));
+  t("iso() no se desfasa en horario de verano", () =>
+    eq(T.iso(new Date(2026, 6, 1)), "2026-07-01"));
+  t("suma() de 0 días no mueve la fecha", () =>
+    eq(T.suma("2026-08-19", 0), "2026-08-19"));
+  t("suma() encadenada no acumula error", () => {
+    let f = "2026-08-17";
+    for (let i = 0; i < 30; i++) f = T.suma(f, 1);
+    return eq(f, "2026-09-16");
+  });
+  t("suma() cruza el cambio de mes", () => eq(T.suma("2026-08-31", 1), "2026-09-01"));
+  t("suma() negativa cruza el mes", () => eq(T.suma("2026-09-01", -1), "2026-08-31"));
+  t("wd(): 17 de agosto de 2026 es lunes", () => eq(T.wd("2026-08-17"), 0));
+  t("wd(): 19 de agosto de 2026 es miércoles", () => eq(T.wd("2026-08-19"), 2));
+  t("wd(): 25 de octubre de 2026 es domingo", () => eq(T.wd("2026-10-25"), 6));
+  t("dias() cuenta bien un salto largo", () => eq(T.dias("2026-08-17", "2026-10-25"), 69));
+
+  /* ── bloques ────────────────────────────────────────────── */
+  t("el 17 de agosto es R1 día 1", () => {
+    const b = T.bloqueDe("2026-08-17"); return eq(b.b.id + "/" + b.n, "R1/1");
+  });
+  t("el 19 de agosto es R1 día 3", () => {
+    const b = T.bloqueDe("2026-08-19"); return eq(b.b.id + "/" + b.n, "R1/3");
+  });
+  t("el 30 de agosto cierra R1 en el día 14", () => {
+    const b = T.bloqueDe("2026-08-30"); return eq(b.b.id + "/" + b.n, "R1/14");
+  });
+  t("el 31 de agosto abre R2", () => eq(T.bloqueDe("2026-08-31").b.id, "R2"));
+  t("el 14 de septiembre abre R3", () => eq(T.bloqueDe("2026-09-14").b.id, "R3"));
+  t("el 28 de septiembre abre R4", () => eq(T.bloqueDe("2026-09-28").b.id, "R4"));
+  t("el 12 de octubre abre R5", () => eq(T.bloqueDe("2026-10-12").b.id, "R5"));
+  t("el 25 de octubre es el último día de R5", () => {
+    const b = T.bloqueDe("2026-10-25"); return eq(b.b.id + "/" + b.n, "R5/14");
+  });
+  t("los 68 días del 19-ago al 25-oct tienen bloque y sesión", () => {
+    let f = "2026-08-19", n = 0;
+    while (T.dias(f, "2026-10-25") >= 0) {
+      const s = T.sesionDe(f);
+      if (!s || !s.base || !s.base.titulo) return "sin sesión en " + f;
+      n++; f = T.suma(f, 1);
+    }
+    return eq(n, 68);
+  });
+
+  /* ── adaptación por dolor ───────────────────────────────── */
+  const guarda = JSON.parse(JSON.stringify(T.S));
+  t("con dolor 1 la sesión se mantiene entera", () => {
+    T.S.reg["2026-08-19"] = {manana: 1};
+    const s = T.sesionDe("2026-08-19");
+    return eq(s.recorte, null);
+  });
+  t("con dolor 3 desaparecen gimnasio y campo", () => {
+    T.S.reg["2026-08-24"] = {manana: 3};
+    const s = T.sesionDe("2026-08-24");
+    const tiene = s.secs.some(x => x.n === "03" || x.n === "07");
+    return tiene ? "sigue habiendo gimnasio o campo" : eq(s.recorte, "ambar");
+  });
+  t("con dolor 3 el isométrico baja 20 puntos", () => {
+    const a = T.sesionDe("2026-08-24");
+    T.S.reg["2026-08-24"] = {manana: 1};
+    const b = T.sesionDe("2026-08-24");
+    return a.pct === b.pct - 20 ? true : "sin bajada: " + a.pct + " vs " + b.pct;
+  });
+  t("con dolor 5 solo queda movilidad", () => {
+    T.S.reg["2026-08-25"] = {manana: 5};
+    const s = T.sesionDe("2026-08-25");
+    return s.secs.length === 1 && s.secs[0].n === "02" ? true :
+           "quedan " + s.secs.map(x => x.n).join(",");
+  });
+
+  /* ── progresión del isométrico ──────────────────────────── */
+  t("el isométrico empieza en 50 %", () => {
+    T.S.reg = {}; return eq(T.sesionDe("2026-08-17").pct, 50);
+  });
+  t("el isométrico llega al 80 % al final de R1", () =>
+    eq(T.sesionDe("2026-08-30").pct, 80));
+
+  /* ── puertas y desfase ──────────────────────────────────── */
+  t("prolongar R1 una semana mantiene el 1 de septiembre en R1", () => {
+    T.S.cfg.extra = {R1: 7};
+    const b = T.bloqueDe("2026-09-01");
+    T.S.cfg.extra = {};
+    return eq(b.b.id, "R1");
+  });
+  t("prolongar R1 no deja huecos: el día siguiente al cierre abre R2", () => {
+    T.S.cfg.extra = {R1: 7};
+    const fin = T.bloqueDe("2026-09-06");
+    const sig = T.bloqueDe("2026-09-07");
+    T.S.cfg.extra = {};
+    return fin.b.id === "R1" && fin.n === 21 && sig.b.id === "R2" && sig.n === 1
+      ? true : "cierre " + fin.b.id + "/" + fin.n + " y sigue " + sig.b.id + "/" + sig.n;
+  });
+  t("prolongar R1 empuja también el final de R5", () => {
+    T.S.cfg.extra = {R1: 7};
+    const b = T.bloqueDe("2026-11-01");
+    T.S.cfg.extra = {};
+    return eq(b.b.id, "R5");
+  });
+  t("todos los días siguen teniendo bloque con un bloque prolongado", () => {
+    T.S.cfg.extra = {R1: 7, R3: 14};
+    let f = "2026-08-17", huecos = 0;
+    while (T.dias(f, "2026-11-15") >= 0) {
+      const b = T.bloqueDe(f);
+      if (b.antes) huecos++;
+      f = T.suma(f, 1);
+    }
+    T.S.cfg.extra = {};
+    return huecos ? huecos + " días sin bloque" : true;
+  });
+
+  /* ── tracker ────────────────────────────────────────────── */
+  t("el progreso arranca a cero", () => eq(T.progresoDe("2026-08-19").hechas, 0));
+  t("marcar tareas sube el progreso", () => {
+    T.S.reg["2026-08-19"] = {hechos: ["02_0", "02_1"], comidas: [0]};
+    const p = T.progresoDe("2026-08-19");
+    return eq(p.hechas, 3);
+  });
+  t("el porcentaje nunca pasa de 100", () => {
+    const p = T.progresoDe("2026-08-19");
+    return p.pct <= 100 ? true : "pct = " + p.pct;
+  });
+  t("la racha cuenta días seguidos", () => {
+    T.S.reg = {};
+    const hoy = T.iso(new Date());
+    T.S.reg[hoy] = {manana: 2};
+    T.S.reg[T.suma(hoy, -1)] = {manana: 2};
+    T.S.reg[T.suma(hoy, -2)] = {manana: 1};
+    return eq(T.racha(), 3);
+  });
+  t("la racha se corta con un hueco", () => {
+    T.S.reg = {};
+    const hoy = T.iso(new Date());
+    T.S.reg[hoy] = {manana: 2};
+    T.S.reg[T.suma(hoy, -2)] = {manana: 2};
+    return eq(T.racha(), 1);
+  });
+  t("ultimaCarga recuerda el peso anterior", () => {
+    T.S.reg = {};
+    T.S.reg["2026-08-17"] = {cargas: {"press-pecho-maquina": "40"}};
+    const u = T.ultimaCarga("press-pecho-maquina", "2026-08-24");
+    return u ? eq(u.kg, "40") : "no encontró la carga";
+  });
+
+  /* ── catálogo ───────────────────────────────────────────── */
+  t("hay 35 fichas de ejercicio", () => eq(Object.keys(T.D.ej).length, 35));
+  t("todas las fichas tienen pasos y error", () => {
+    for (const k in T.D.ej) {
+      const e = T.D.ej[k];
+      if (!e.pasos || !e.pasos.length) return k + " sin pasos";
+      if (!e.error) return k + " sin error frecuente";
+    }
+    return true;
+  });
+  t("todas las fichas tienen imagen", () => {
+    const sin = Object.keys(T.D.ej).filter(k => !T.D.img[k]);
+    return sin.length ? "sin imagen: " + sin.join(", ") : true;
+  });
+  t("los cinco bloques tienen microciclo de siete días", () => {
+    for (const b of T.D.bloques) {
+      const m = T.D.micro[b.id];
+      if (!m) return "falta microciclo de " + b.id;
+      for (let d = 0; d < 7; d++) if (!m[d]) return b.id + " sin día " + d;
+    }
+    return true;
+  });
+  t("todos los bloques tienen criterios de puerta", () => {
+    for (const b of T.D.bloques) if (!b.puerta || !b.puerta.length) return b.id + " sin puerta";
+    return true;
+  });
+  t("los ejercicios con slug existen en el catálogo", () => {
+    const malos = [];
+    for (const bid in T.D.micro)
+      for (const d in T.D.micro[bid])
+        T.D.micro[bid][d].secciones.forEach(s => {
+          if (s.tipo !== "tabla") return;
+          s.items.forEach(it => { if (it[0] && !T.D.ej[it[0]]) malos.push(bid + ":" + it[0]); });
+        });
+    return malos.length ? malos.join(", ") : true;
+  });
+  t("hay comidas para los siete días", () => {
+    for (let d = 0; d < 7; d++)
+      if (!T.D.nutricion[d] || T.D.nutricion[d].length !== 6) return "día " + d + " incompleto";
+    return true;
+  });
+
+  /* ── vistas ─────────────────────────────────────────────── */
+  T.S = guarda;
+  ["hoy", "semana", "manual", "datos"].forEach(v => {
+    t("la vista " + v + " se pinta sin romper", () => {
+      T.setVista(v);
+      const el = w.document.getElementById("app");
+      return el && el.innerHTML.length > 400 ? true : "vista vacía";
+    });
+  });
+  t("volver a Hoy tras navegar funciona", () => {
+    T.setVista("hoy");
+    return w.document.getElementById("app").innerHTML.indexOf("Dolor de esta mañana") > 0
+      ? true : "no aparece el bloque de dolor";
+  });
+  t("la app no guarda ninguna clave de API", () => {
+    /* las imagenes en base64 disparan falsos positivos: se quitan antes de mirar */
+    const s = w.document.documentElement.innerHTML
+      .replace(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+/g, "[img]");
+    const m = s.match(/AIza[0-9A-Za-z_-]{30,}|AQ\.[0-9A-Za-z_-]{30,}|gho_[0-9A-Za-z]{30,}|api[_-]?key\s*[:=]\s*["'][A-Za-z0-9._-]{16,}/i);
+    return m ? "encontrado: " + m[0].slice(0, 14) + "..." : true;
+  });
+  t("la app no llama a ningún servidor externo", () => {
+    const s = w.document.documentElement.innerHTML
+      .replace(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+/g, "[img]");
+    const m = s.match(/https?:\/\/(?!www\.w3\.org)[a-z0-9.-]+/gi);
+    return m ? "referencias externas: " + [...new Set(m)].join(", ") : true;
+  });
+  t("la app cabe holgada en el almacenamiento del móvil", () => {
+    const kb = Math.round(w.document.documentElement.innerHTML.length / 1024);
+    return kb < 4096 ? true : "pesa " + kb + " KB";
+  });
+
+  /* deja la app con datos de ejemplo para poder mirarla debajo */
+  const hoy = T.iso(new Date());
+  T.S.reg[hoy] = {manana: 2, hechos: ["02_0", "02_1", "02_4"], comidas: [0, 1],
+                  cargas: {"press-pecho-maquina": "40", "press-militar-maquina": "22"},
+                  zona: "ingle derecha"};
+  T.S.reg[T.suma(hoy, -7)] = {cargas: {"press-pecho-maquina": "37,5"}};
+  T.setFecha(hoy); T.setVista("hoy");
+
+  const res = document.getElementById("res");
+  res.className = ko === 0 ? "good" : "bad";
+  res.textContent = ko === 0
+    ? "Las " + ok + " pruebas pasan."
+    : ko + " de " + (ok + ko) + " pruebas fallan.";
+};
+</script>
+</body>
+</html>

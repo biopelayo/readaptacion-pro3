@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{FECHA}} · {{BLOQUE}} · plantilla</title>
+<style>
+@page{size:A4;margin:0}
+
+:root{
+  --navy-0:#060E24; --navy-1:#0A1733; --navy-2:#0E2049; --navy-3:#132a5c;
+  --card:#0D1C40;
+  --gold:#C9A227; --gold-lt:#E3C468; --gold-pale:#F0DFA8;
+  --white:#FFFFFF; --body:#C9D4EA; --dim:#8C9BBB;
+  --green:#54B37A; --amber:#E8B93B; --red:#E2685A;
+  --hair:rgba(201,162,39,.38); --hair-soft:rgba(201,162,39,.18);
+  --display:"Anton","Archivo Black","Oswald","Haettenschweiler","Franklin Gothic Demi Cond","Arial Narrow",Impact,"Segoe UI",sans-serif;
+  --sans:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","Cascadia Mono","SF Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#04091A;
+  font-family:var(--sans);color:var(--body);font-size:13px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.page{
+  width:210mm;min-height:297mm;margin:0 auto;padding:11mm 11mm 0;
+  background:
+    radial-gradient(120% 80% at 78% 4%, #17356F 0%, rgba(23,53,111,0) 55%),
+    radial-gradient(90% 60% at 6% 96%, #10254F 0%, rgba(16,37,79,0) 60%),
+    linear-gradient(168deg,#0A1733 0%,#081228 48%,#060E24 100%);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.page > .foot{margin-top:auto}
+.page + .page{margin-top:14px}
+
+/* ─── cabecera ─────────────────────────────────────────── */
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+.pill{
+  display:inline-block;border:1px solid var(--hair);border-radius:4px;
+  padding:5px 12px;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;color:var(--gold-pale);white-space:nowrap;
+}
+.pill b{color:var(--white)}
+.pill-solid{background:var(--gold);border-color:var(--gold);color:#0A1733;font-weight:800}
+
+.masthead{position:relative;display:grid;grid-template-columns:1fr 128px;gap:18px;align-items:start;margin-bottom:16px}
+.mast-kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:7px}
+h1.title{
+  font-family:var(--display);font-weight:400;font-size:44px;line-height:.95;
+  letter-spacing:.005em;text-transform:uppercase;color:var(--white);margin:0 0 6px;
+}
+h1.title .g{color:var(--gold-lt)}
+.subtitle{font-size:14px;color:var(--dim);margin:0 0 12px;line-height:1.4}
+.subtitle strong{color:var(--gold-pale);font-weight:600}
+
+/* sello */
+.crest{position:relative;text-align:center;padding-top:2px}
+.crest::before{
+  content:"";position:absolute;left:-46px;top:-16px;width:36px;height:150px;
+  background:linear-gradient(180deg,var(--gold),rgba(201,162,39,0));
+  transform:skewX(-16deg);opacity:.5;
+}
+.crest svg{display:block;margin:0 auto}
+.crest-cap{font-family:var(--display);font-size:15px;letter-spacing:.05em;color:var(--white);text-transform:uppercase;margin-top:6px;line-height:1}
+.crest-sub{font-size:8.5px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-top:3px}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  border:1px solid var(--hair-soft);border-radius:3px;padding:4px 9px;color:var(--dim);
+}
+.tag.on{border-color:var(--gold);color:var(--gold-lt)}
+.tag.amber{border-color:rgba(232,185,59,.6);color:var(--amber)}
+
+/* ─── tarjetas ─────────────────────────────────────────── */
+.card{
+  background:linear-gradient(160deg,rgba(19,42,92,.85),rgba(10,23,51,.9));
+  border:1px solid var(--hair);border-radius:9px;padding:13px 15px;margin-bottom:11px;
+  break-inside:avoid;
+}
+.card.plain{background:rgba(8,18,40,.6);border-color:var(--hair-soft)}
+.card-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.card-head .ic{flex:0 0 auto;color:var(--gold)}
+.card-title{
+  font-family:var(--display);font-size:16px;letter-spacing:.045em;text-transform:uppercase;
+  color:var(--gold-lt);margin:0;line-height:1;font-weight:400;
+}
+.card-title .w{color:var(--white)}
+.card-meta{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.num-badge{
+  font-family:var(--mono);font-size:10px;font-weight:700;color:#0A1733;background:var(--gold);
+  border-radius:3px;padding:3px 6px;letter-spacing:.06em;
+}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.grid-main{display:grid;grid-template-columns:1.55fr 1fr;gap:11px;align-items:start}
+
+/* ─── listas ───────────────────────────────────────────── */
+ul.bul{list-style:none;margin:0;padding:0}
+ul.bul li{position:relative;padding:3px 0 3px 14px;font-size:12px;line-height:1.45}
+ul.bul li::before{content:"";position:absolute;left:1px;top:10px;width:4px;height:4px;background:var(--gold);border-radius:50%}
+ul.bul li strong{color:var(--white)}
+
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 30px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{
+  content:counter(s);position:absolute;left:0;top:6px;width:19px;height:19px;border-radius:50%;
+  border:1px solid var(--gold);color:var(--gold);font-family:var(--mono);font-size:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+ol.steps li strong{color:var(--white)}
+
+/* ─── tablas ───────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+thead th{
+  background:rgba(201,162,39,.14);color:var(--gold-pale);font-size:9px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;padding:7px 9px;text-align:left;
+  border-bottom:1px solid var(--hair);
+}
+tbody td{padding:6px 9px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle;color:var(--body)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:rgba(255,255,255,.022)}
+td.k{color:var(--white);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--mono);font-size:10.5px;color:var(--gold-pale);white-space:nowrap}
+td.c,th.c{text-align:center}
+
+/* casilla para escribir a boli */
+.box{
+  display:block;background:#F6F3E8;border:1px solid #8C7C4A;border-radius:2px;
+  height:17px;min-width:44px;
+}
+.box.w{min-width:120px}
+.box.line{height:20px;margin:5px 0}
+td.fill{width:56px;padding:5px 8px}
+
+/* ─── semáforo ─────────────────────────────────────────── */
+.sem{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.sem-c{border:1px solid var(--hair-soft);border-radius:7px;padding:11px 13px;background:rgba(6,14,36,.5);position:relative;overflow:hidden}
+.sem-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.sem-c.g::before{background:var(--green)}.sem-c.a::before{background:var(--amber)}.sem-c.r::before{background:var(--red)}
+.sem-n{font-family:var(--display);font-size:30px;line-height:1;color:var(--white)}
+.sem-c.g .sem-n{color:var(--green)}.sem-c.a .sem-n{color:var(--amber)}.sem-c.r .sem-n{color:var(--red)}
+.sem-t{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin:5px 0 3px}
+.sem-c.g .sem-t{color:var(--green)}.sem-c.a .sem-t{color:var(--amber)}.sem-c.r .sem-t{color:var(--red)}
+.sem-d{font-size:11px;color:var(--dim);line-height:1.35}
+
+/* ─── franja prohibido ─────────────────────────────────── */
+.ban{border:1px solid rgba(226,104,90,.42);border-radius:9px;padding:11px 14px;background:rgba(80,20,20,.16);margin-bottom:11px}
+.ban-h{font-family:var(--display);font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips span{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#F0B6AC;border:1px solid rgba(226,104,90,.45);border-radius:3px;padding:4px 8px}
+
+/* ─── avisos ───────────────────────────────────────────── */
+.note{border-left:3px solid var(--gold);background:rgba(201,162,39,.08);padding:9px 13px;border-radius:0 5px 5px 0;font-size:11.5px;margin:9px 0;line-height:1.45}
+.note.warn{border-left-color:var(--red);background:rgba(226,104,90,.09)}
+.note strong{color:var(--white)}
+.mono{font-family:var(--mono);font-size:10.5px;color:var(--gold-pale)}
+
+/* ─── regla del día ────────────────────────────────────── */
+.rule{
+  border:1px solid var(--hair);border-radius:9px;padding:13px 16px;margin-bottom:11px;
+  background:linear-gradient(100deg,rgba(201,162,39,.13),rgba(201,162,39,.02));
+  display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center;
+}
+.rule-l{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:800;line-height:1.4}
+.rule-t{font-size:14px;color:var(--white);line-height:1.42;font-weight:500}
+
+/* ─── comidas ──────────────────────────────────────────── */
+.meals{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.meal{border:1px solid var(--hair-soft);border-radius:7px;padding:9px 10px;background:rgba(6,14,36,.45)}
+.meal dt{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:5px}
+.meal dd{margin:0;font-size:10.5px;line-height:1.35;color:var(--body)}
+
+/* ─── banda semanal ────────────────────────────────────── */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.wd{border:1px solid var(--hair-soft);border-radius:6px;padding:8px 9px;background:rgba(6,14,36,.45);text-align:center}
+.wd.on{border-color:var(--gold);background:rgba(201,162,39,.12)}
+.wd-d{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:5px}
+.wd-t{font-size:10.5px;color:var(--white);line-height:1.3;font-weight:600}
+.wd-s{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:4px}
+
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.mini{border:1px solid var(--hair-soft);border-radius:6px;padding:9px 11px;background:rgba(6,14,36,.45);text-align:center}
+.mini-t{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.mini-v{font-family:var(--display);font-size:19px;color:var(--white);margin:5px 0 2px;line-height:1}
+.mini-d{font-size:9.5px;color:var(--dim);line-height:1.3}
+
+/* ─── pie ──────────────────────────────────────────────── */
+.foot{
+  margin:16px -11mm 0;padding:10px 11mm;border-top:1px solid var(--hair-soft);
+  background:rgba(4,9,26,.6);display:flex;justify-content:space-between;align-items:center;gap:14px;
+  font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;
+}
+.foot .r{color:var(--dim);letter-spacing:.1em;font-weight:600;text-transform:none;font-size:9px}
+
+/* ─── botón ────────────────────────────────────────────── */
+.print-btn{
+  position:fixed;right:18px;bottom:18px;z-index:99;background:var(--gold);color:#0A1733;border:none;
+  padding:12px 18px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  cursor:pointer;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.5);font-family:var(--sans);
+}
+.print-btn:hover{background:var(--gold-lt)}
+.print-btn:focus-visible{outline:2px solid var(--white);outline-offset:2px}
+
+@media print{
+  .print-btn{display:none}
+  html{
+    background:
+      radial-gradient(120% 80% at 78% 4%, #17356F 0%, rgba(23,53,111,0) 55%),
+      radial-gradient(90% 60% at 6% 96%, #10254F 0%, rgba(16,37,79,0) 60%),
+      linear-gradient(168deg,#0A1733 0%,#081228 48%,#060E24 100%);
+  }
+  body{background:none;font-size:11.5px}
+  .page{margin:0;width:210mm;height:288mm;min-height:0;overflow:hidden;padding:9mm 10mm 0;background:none;page-break-after:always}
+  .page:last-child{page-break-after:auto}
+  .foot{margin:12px -10mm 0;padding:8px 10mm}
+  h1.title{font-size:38px}
+  .card{padding:11px 13px;margin-bottom:9px}
+  table{font-size:11px}
+  thead th{padding:6px 8px}
+  tbody td{padding:5px 8px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media screen and (max-width:820px){
+  .page{width:auto;padding:16px 14px 0}
+  h1.title{font-size:30px}
+  .masthead{grid-template-columns:1fr;gap:10px}
+  .crest{display:none}
+  .grid2,.grid3,.grid-main,.sem,.meals{grid-template-columns:1fr}
+  .week{grid-template-columns:repeat(2,1fr)}
+  .grid5{grid-template-columns:repeat(2,1fr)}
+  .rule{grid-template-columns:1fr;gap:6px}
+  .foot{margin:14px -14px 0;padding:10px 14px;flex-direction:column;align-items:flex-start;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Imprimir</button>
+
+<!--
+  ════════════════════════════════════════════════════════════════════
+  PLANTILLA · hoja diaria estilo Manual PRO 3.0 · Real Oviedo Edition
+  ════════════════════════════════════════════════════════════════════
+
+  CÓMO SE USA
+  1. Copiar este archivo a dias/AAAA-MM-DD_<bloque><dia>_<diasemana>.html
+  2. Sustituir los marcadores {{...}}
+  3. Repartir el contenido en tres secciones .page: cada una es un A4.
+     Si una página desborda, Chrome añade una hoja extra: comprobarlo
+     imprimiendo a PDF y contando páginas con PyMuPDF, nunca con el visor.
+
+  PIEZAS DISPONIBLES (clases)
+  .pill / .pill-solid ....... pastillas de cabecera
+  .card / .card.plain ....... tarjeta con hairline dorada
+  .grid2 .grid3 .grid5 ...... rejillas
+  .grid-main ................ 1,55fr + 1fr (bloque ancho + columna de reglas)
+  .sem ...................... semáforo de tres celdas (.g .a .r)
+  .ban + .chips ............. franja roja de lo prohibido
+  .rule ..................... regla del día
+  .note / .note.warn ........ aviso dorado / rojo
+  ul.bul / ol.steps ......... listas con viñeta dorada / numeradas en círculo
+  table + td.fill + .box .... tabla con casilla clara para escribir a boli
+  .meals + .meal ............ tira de comidas
+  .week + .wd (.wd.on) ...... banda de siete días
+  .grid5 + .mini ............ métricas de recuperación invisible
+  .foot ..................... pie de página (se ancla abajo solo)
+
+  REGLAS DEL SISTEMA
+  · Fondo azul marino con degradado, oro #C9A227 para títulos y acentos.
+  · Titulares en versal condensada, mezclando blanco y oro en la misma línea.
+  · Todo campo que se rellena a mano va con fondo claro (.box), nunca oscuro.
+  · Nada de logos de clubes reales: el sello es propio.
+  · Sin em dashes en la prosa.
+-->
+
+<!-- ══════════════ PÁGINA 1 · situación y decisión ══════════════ -->
+<section class="page">
+
+  <div class="top">
+    <span class="pill"><b>{{PARTE}}</b> · {{SUBTITULO_PARTE}}</span>
+    <span class="pill pill-solid">{{DIA_N}} DE {{DIAS_TOTAL}}</span>
+  </div>
+
+  <header class="masthead">
+    <div>
+      <div class="mast-kicker">{{DIA_SEMANA}} {{FECHA_LARGA}}</div>
+      <h1 class="title">{{TITULO_BLANCO}} <span class="g">{{TITULO_ORO}}</span></h1>
+      <p class="subtitle">{{SUBTITULO}}</p>
+      <div class="tags">
+        <span class="tag on">{{TAG_SEMAFORO}}</span>
+        <span class="tag">{{TAG_DIA_TIPO}}</span>
+        <span class="tag">72 kg · 181 cm</span>
+        <span class="tag amber">Proteína 137 g</span>
+      </div>
+    </div>
+    <div class="crest">
+      <svg width="86" height="98" viewBox="0 0 86 98" fill="none" aria-hidden="true">
+        <path d="M43 4 L79 15 V49c0 21-15 36-36 45C22 85 7 70 7 49V15Z" stroke="#C9A227" stroke-width="2" fill="rgba(201,162,39,.07)"/>
+        <path d="M43 11 L72 20v28c0 17-12 30-29 37-17-7-29-20-29-37V20Z" stroke="rgba(201,162,39,.4)" stroke-width="1"/>
+        <path d="M43 26v34M31 40h24" stroke="#E3C468" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="43" cy="70" r="7" stroke="#E3C468" stroke-width="1.6"/>
+        <path d="M36.5 70h13M43 63.2v13.6" stroke="rgba(227,196,104,.55)" stroke-width="1"/>
+      </svg>
+      <div class="crest-cap">PRO 3.0</div>
+      <div class="crest-sub">Readaptación</div>
+    </div>
+  </header>
+
+  <!-- franja de lo prohibido: quitar cuando el bloque ya no restrinja nada -->
+  <div class="ban">
+    <div class="ban-h">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+      Fuera del plan durante todo el bloque {{BLOQUE}}
+    </div>
+    <div class="chips">{{CHIPS_PROHIBIDO}}</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-l">Regla<br>del día</div>
+    <div class="rule-t">{{REGLA_DEL_DIA}}</div>
+  </div>
+
+  <div class="grid-main">
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/></svg></span>
+        <h2 class="card-title"><span class="w">01 ·</span> {{BLOQUE_1_TITULO}}</h2>
+        <span class="card-meta">{{BLOQUE_1_META}}</span>
+      </div>
+      {{BLOQUE_1_CONTENIDO}}
+    </div>
+
+    <div class="card plain">
+      <div class="card-head">
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span>
+        <h2 class="card-title">REGLAS DE HOY</h2>
+      </div>
+      <ol class="steps">{{REGLAS_DE_HOY}}</ol>
+    </div>
+  </div>
+
+  <div class="card plain">
+    <div class="card-head">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+      <h2 class="card-title">SEMÁFORO · cómo se lee el número de la mañana</h2>
+    </div>
+    <div class="sem">
+      <div class="sem-c g"><div class="sem-n">0–1</div><div class="sem-t">{{SEM_VERDE_T}}</div><div class="sem-d">{{SEM_VERDE_D}}</div></div>
+      <div class="sem-c a"><div class="sem-n">2–3</div><div class="sem-t">{{SEM_AMBAR_T}}</div><div class="sem-d">{{SEM_AMBAR_D}}</div></div>
+      <div class="sem-c r"><div class="sem-n">4+</div><div class="sem-t">Parar</div><div class="sem-d">{{SEM_ROJO_D}}</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>Disciplina · Constancia · Inteligencia · Fuerza</div>
+    <div class="r">Bloque {{BLOQUE}} · día {{DIA_N}} · página 1 de 3</div>
+  </div>
+</section>
+
+<!-- ══════════════ PÁGINA 2 · la sesión ══════════════ -->
+<section class="page">
+
+  <div class="top">
+    <span class="pill"><b>{{PARTE}}</b> · {{SUBTITULO_PARTE}}</span>
+    <span class="pill pill-solid">SESIÓN DEL DÍA</span>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></svg></span>
+        <h2 class="card-title"><span class="w">02 ·</span> {{BLOQUE_2_TITULO}}</h2>
+        <span class="card-meta">{{BLOQUE_2_META}}</span>
+      </div>
+      {{BLOQUE_2_CONTENIDO}}
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12h2M19 12h2M6.5 8v8M17.5 8v8M9 6.5v11M15 6.5v11M9 12h6"/></svg></span>
+        <h2 class="card-title"><span class="w">03 ·</span> {{BLOQUE_3_TITULO}}</h2>
+        <span class="card-meta">{{BLOQUE_3_META}}</span>
+      </div>
+      {{BLOQUE_3_CONTENIDO}}
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s6 6.6 6 10.5A6 6 0 016 13.5C6 9.6 12 3 12 3z"/></svg></span>
+        <h2 class="card-title"><span class="w">04 ·</span> PISCINA</h2>
+        <span class="card-meta">{{PISCINA_MIN}}</span>
+      </div>
+      <ul class="bul">{{PISCINA}}</ul>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 13V6.5a1.5 1.5 0 013 0V12m0-1V5.2a1.5 1.5 0 013 0V12m0-.8a1.5 1.5 0 013 0V17a4 4 0 01-4 4h-2.2a4 4 0 01-3.3-1.8L6 15.5a1.6 1.6 0 012.5-2z"/></svg></span>
+        <h2 class="card-title"><span class="w">05 ·</span> FISIOTERAPIA</h2>
+        <span class="card-meta">{{FISIO_META}}</span>
+      </div>
+      {{FISIO}}
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></span>
+        <h2 class="card-title"><span class="w">06 ·</span> ELECTROESTIMULACIÓN</h2>
+        <span class="card-meta">{{EMS_META}}</span>
+      </div>
+      <ul class="bul">{{EMS}}</ul>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>Fuerza · Paciencia · Calidad antes que cantidad</div>
+    <div class="r">Bloque {{BLOQUE}} · día {{DIA_N}} · página 2 de 3</div>
+  </div>
+</section>
+
+<!-- ══════════════ PÁGINA 3 · mesa y cierre ══════════════ -->
+<section class="page">
+
+  <div class="top">
+    <span class="pill"><b>{{PARTE}}</b> · {{SUBTITULO_PARTE}}</span>
+    <span class="pill pill-solid">MESA Y CIERRE DEL DÍA</span>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v8a2 2 0 002 2h0a2 2 0 002-2V3M8 13v8M17 3c-1.6 1.4-2.4 3.2-2.4 5.4 0 1.8.8 2.9 2.4 3.2V21"/></svg></span>
+      <h2 class="card-title"><span class="w">07 ·</span> NUTRICIÓN <span class="w">· {{SEMANA_CICLO}}</span></h2>
+      <span class="card-meta">Objetivo 137 g de proteína</span>
+    </div>
+    <div class="meals">
+      <dl class="meal"><dt>Desayuno</dt><dd>{{DESAYUNO}}</dd></dl>
+      <dl class="meal"><dt>Media mañana</dt><dd>{{MEDIA_MANANA}}</dd></dl>
+      <dl class="meal"><dt>Comida</dt><dd>{{COMIDA}}</dd></dl>
+      <dl class="meal"><dt>Post-entreno</dt><dd>{{POST}}</dd></dl>
+      <dl class="meal"><dt>Merienda</dt><dd>{{MERIENDA}}</dd></dl>
+      <dl class="meal"><dt>Cena</dt><dd>{{CENA}}</dd></dl>
+    </div>
+    <div class="note">{{NOTA_NUTRICION}}</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card plain">
+      <div class="card-head">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20l4-1 10.5-10.5a2.1 2.1 0 00-3-3L5 16z"/><path d="M14.5 5.5l3 3"/></svg></span>
+        <h2 class="card-title"><span class="w">08 ·</span> REGISTRO DE LA NOCHE</h2>
+      </div>
+      <table><tbody>{{REGISTRO_FILAS}}</tbody></table>
+      <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800;margin:10px 0 4px">Notas libres</div>
+      <span class="box line"></span><span class="box line"></span>
+      <div class="note">Pasar los números a <span class="mono">seguimiento/dolor_24h.csv</span> antes de dormir.</div>
+    </div>
+
+    <div class="card plain">
+      <div class="card-head">
+        <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>
+        <h2 class="card-title"><span class="w">09 ·</span> DECISIÓN PARA MAÑANA</h2>
+        <span class="card-meta">{{MANANA_REF}}</span>
+      </div>
+      <p style="font-size:11.5px;margin:0 0 8px;color:var(--dim)">Primer número del día, antes de levantarte de la cama.</p>
+      <table>
+        <thead><tr><th style="width:96px">Dolor</th><th>{{MANANA_DIA}}</th></tr></thead>
+        <tbody>{{DECISION_FILAS}}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+      <h2 class="card-title">LA SEMANA <span class="w">· {{RANGO_SEMANA}}</span></h2>
+      <span class="card-meta">{{SEMANA_REF}}</span>
+    </div>
+    <div class="week">{{SEMANA_DIAS}}</div>
+    <div class="note">{{NOTA_SEMANA}}</div>
+  </div>
+
+  <div class="card plain">
+    <div class="card-head">
+      <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.5 12.8A8.5 8.5 0 1111.2 3.5a6.6 6.6 0 009.3 9.3z"/></svg></span>
+      <h2 class="card-title">RECUPERACIÓN INVISIBLE <span class="w">· todos los días</span></h2>
+    </div>
+    <div class="grid5">
+      <div class="mini"><div class="mini-t">Sueño</div><div class="mini-v">7-9 h</div><div class="mini-d">de calidad</div></div>
+      <div class="mini"><div class="mini-t">Proteína</div><div class="mini-v">137 g</div><div class="mini-d">1,9 g/kg, repartida</div></div>
+      <div class="mini"><div class="mini-t">Hidratación</div><div class="mini-v">2,5 L</div><div class="mini-d">orina clara</div></div>
+      <div class="mini"><div class="mini-t">Movilidad</div><div class="mini-v">10-15 min</div><div class="mini-d">diarios</div></div>
+      <div class="mini"><div class="mini-t">Registro</div><div class="mini-v">0-10</div><div class="mini-d">dolor y síntomas</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>Función por encima del calendario</div>
+    <div class="r">Uso personal. No sustituye valoración médica. · página 3 de 3</div>
+  </div>
+</section>
+
+</body>
+</html>
