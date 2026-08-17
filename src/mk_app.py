@@ -76,9 +76,13 @@ const save = () => localStorage.setItem(K, JSON.stringify(S));
 
 /* ── tema ─────────────────────────────────────────────────── */
 function aplicaTema() {
-  const m = S.cfg.tema || "auto";
   const r = document.documentElement;
+  const m = S.cfg.tema || "auto";
   if (m === "auto") r.removeAttribute("data-t"); else r.setAttribute("data-t", m);
+  /* tamano de texto: la version web de Dynamic Type. Escala la interfaz entera
+     porque todo el diseno esta en rem sobre el tamano raiz. */
+  const f = S.cfg.fs || "n";
+  if (f === "n") r.removeAttribute("data-fs"); else r.setAttribute("data-fs", f);
 }
 
 /* ── fechas ───────────────────────────────────────────────── */
@@ -472,7 +476,13 @@ function vistaDatos() {
        [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(o =>
          '<button class="btn ' + (tm === o[0] ? '' : 'ghost') + '" data-tema="' + o[0] + '">' +
          o[1] + '</button>').join("") + '</div>' +
-       '<div class="note">En automático sigue al sistema: claro de día y oscuro de noche.</div></div>';
+       '<div class="note">En automático sigue al sistema: claro de día y oscuro de noche.</div>' +
+       '<div class="lab">Tamaño del texto</div><div class="row">' +
+       [["n", "Normal"], ["g", "Grande"], ["xg", "Enorme"]].map(o =>
+         '<button class="btn ' + ((S.cfg.fs || "n") === o[0] ? '' : 'ghost') +
+         '" data-fs="' + o[0] + '">' + o[1] + '</button>').join("") + '</div>' +
+       '<div class="note">Escala la aplicación entera, no solo las letras: fotos, botones y ' +
+       'espacios crecen con el texto.</div></div>';
 
   h += '<div class="card"><div class="ch"><span class="cn">↓</span>' +
        '<h2 class="ct">Exportar</h2></div>' +
@@ -547,6 +557,7 @@ document.addEventListener("click", e => {
     return cierraTimer(false);
   }
   if (t.dataset.tema) { S.cfg.tema = t.dataset.tema; save(); aplicaTema(); return render(); }
+  if (t.dataset.fs) { S.cfg.fs = t.dataset.fs; save(); aplicaTema(); return render(); }
   if (t.dataset.exp) { exporta(t.dataset.exp); return; }
   if (t.dataset.borrar) {
     if (confirm("Se borra todo el historial. ¿Seguro?")) { S = {reg:{}, cfg:{extra:{}}}; save(); render(); }
