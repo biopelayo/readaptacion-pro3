@@ -35,171 +35,18 @@ print("imagenes embebidas:", len(IMGS))
 DATA = dict(bloques=BLOQUES, micro=MICRO, nutricion=NUTRICION,
             momentos=MOMENTOS, iso=ISO, ej=EJ, img=IMGS)
 
-CSS = """
-:root{--navy0:#060E24;--navy1:#0A1733;--card:#0E2049;--gold:#C9A227;--goldl:#E3C468;
---goldp:#F0DFA8;--white:#fff;--body:#C9D4EA;--dim:#8C9BBB;--green:#54B37A;--amber:#E8B93B;
---red:#E2685A;--hair:rgba(201,162,39,.34);--hairs:rgba(201,162,39,.16);
---disp:"Anton","Archivo Black","Oswald","Haettenschweiler","Arial Narrow",Impact,sans-serif;
---sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
---mono:"IBM Plex Mono","Cascadia Mono",ui-monospace,Consolas,monospace}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
-body{background:radial-gradient(120% 60% at 80% 0%,#17356F 0%,rgba(23,53,111,0) 55%),
-linear-gradient(170deg,#0A1733,#081228 50%,#060E24);background-attachment:fixed;
-color:var(--body);font-family:var(--sans);font-size:16px;line-height:1.5;min-height:100vh;
-padding-bottom:84px;overflow-x:hidden}
-.wrap,.card{max-width:100%}
-.tags{overflow-x:auto}
-.wrap{max-width:680px;margin:0 auto;padding:14px 14px 0}
-.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-.pill{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
-border:1px solid var(--hair);border-radius:4px;padding:5px 10px;color:var(--goldp)}
-.pill.solid{background:var(--gold);border-color:var(--gold);color:#0A1733;font-weight:800}
-h1{font-family:var(--disp);font-weight:400;font-size:30px;line-height:1;margin:0 0 6px;
-text-transform:uppercase;color:var(--white)}
-h1 .g{color:var(--goldl)}
-.sub{color:var(--dim);font-size:14px;margin:0 0 12px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
-border:1px solid var(--hairs);border-radius:3px;padding:4px 8px;color:var(--dim)}
-.tag.on{border-color:var(--gold);color:var(--goldl)}
-.card{background:linear-gradient(160deg,rgba(19,42,92,.8),rgba(10,23,51,.9));
-border:1px solid var(--hair);border-radius:12px;padding:14px;margin-bottom:12px}
-.ch{display:flex;align-items:center;gap:9px;margin-bottom:10px}
-.cn{font-family:var(--mono);font-size:10px;font-weight:700;color:#0A1733;background:var(--gold);
-border-radius:3px;padding:3px 6px}
-.ct{font-family:var(--disp);font-size:17px;text-transform:uppercase;color:var(--goldl);
-margin:0;line-height:1;flex:1}
-.cm{font-family:var(--mono);font-size:10px;color:var(--dim);text-transform:uppercase}
-.rule{border-left:3px solid var(--gold);background:rgba(201,162,39,.09);padding:11px 14px;
-border-radius:0 6px 6px 0;margin-bottom:12px;font-size:14px;color:var(--white)}
-.note{border-left:3px solid var(--gold);background:rgba(201,162,39,.08);padding:9px 12px;
-border-radius:0 5px 5px 0;font-size:13px;margin:10px 0}
-.note.warn{border-left-color:var(--red);background:rgba(226,104,90,.1)}
-.ex{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;
-padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.ex:last-child{border-bottom:none}
-.ex img{width:52px;height:40px;object-fit:cover;border-radius:5px;border:1px solid var(--hairs)}
-.ex .ph{width:52px;height:40px;border-radius:5px;border:1px dashed var(--hairs)}
-.exn{font-size:14px;color:var(--white);line-height:1.25}
-.exv{font-family:var(--mono);font-size:11px;color:var(--goldp);margin-top:2px}
-.exk{font-size:9px;letter-spacing:.1em;color:var(--gold);font-weight:800;margin-top:2px}
-.chk{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--hair);background:transparent;
-color:var(--gold);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
-.chk.on{background:var(--gold);border-color:var(--gold);color:#0A1733}
-ul.bul{list-style:none;margin:0;padding:0}
-ul.bul li{position:relative;padding:5px 0 5px 15px;font-size:14px}
-ul.bul li::before{content:"";position:absolute;left:1px;top:13px;width:4px;height:4px;
-background:var(--gold);border-radius:50%}
-ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
-ol.steps li{counter-increment:s;position:relative;padding:7px 0 7px 30px;font-size:14px;
-border-bottom:1px solid rgba(255,255,255,.05)}
-ol.steps li:last-child{border-bottom:none}
-ol.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:21px;height:21px;
-border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-family:var(--mono);
-font-size:11px;display:flex;align-items:center;justify-content:center}
-.lab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
-font-weight:800;margin:14px 0 7px}
-.scale{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}
-.sc{min-width:0;padding:0;height:46px;border-radius:8px;border:1.5px solid var(--hairs);
-background:rgba(255,255,255,.03);color:var(--body);font-family:var(--mono);font-size:14px;
-display:flex;align-items:center;justify-content:center;cursor:pointer}
-.sc.on{background:var(--gold);border-color:var(--gold);color:#0A1733;font-weight:700}
-.sc.g.on{background:var(--green);border-color:var(--green);color:#04140a}
-.sc.a.on{background:var(--amber);border-color:var(--amber);color:#1a1200}
-.sc.r.on{background:var(--red);border-color:var(--red);color:#fff}
-input[type=text],textarea,select{width:100%;background:rgba(255,255,255,.05);color:var(--white);
-border:1px solid var(--hairs);border-radius:9px;padding:11px 12px;font-family:var(--sans);
-font-size:15px}
-textarea{min-height:70px;resize:vertical}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--gold);
-color:#0A1733;border:none;border-radius:9px;padding:13px 16px;font-weight:800;font-size:13px;
-letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:var(--sans)}
-.btn.ghost{background:transparent;color:var(--goldl);border:1px solid var(--hair)}
-.btn.wide{width:100%;margin-top:8px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(6,14,36,.97);
-border-top:1px solid var(--hair);display:flex;z-index:50;
-padding-bottom:env(safe-area-inset-bottom)}
-.nav button{flex:1;background:none;border:none;color:var(--dim);padding:11px 4px 13px;
-font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;cursor:pointer;
-font-family:var(--sans)}
-.nav button.on{color:var(--gold)}
-.nav .ic{display:block;font-size:19px;margin-bottom:3px;line-height:1}
-.daynav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.daynav button{width:44px;height:44px;border-radius:10px;border:1px solid var(--hair);
-background:transparent;color:var(--goldl);font-size:19px;cursor:pointer}
-.daynav .d{flex:1;text-align:center;font-family:var(--mono);font-size:13px;color:var(--goldp)}
-.sem{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
-.semc{border:1px solid var(--hairs);border-radius:9px;padding:10px;text-align:center}
-.semc.on{border-width:2px}
-.semn{font-family:var(--disp);font-size:20px;line-height:1}
-.semt{font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin-top:3px}
-.g .semn,.g .semt{color:var(--green)} .a .semn,.a .semt{color:var(--amber)}
-.r .semn,.r .semt{color:var(--red)}
-.week{display:grid;gap:7px}
-.wd{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;
-border:1px solid var(--hairs);border-radius:9px;padding:10px 12px;cursor:pointer}
-.wd.on{border-color:var(--gold);background:rgba(201,162,39,.1)}
-.wd .dd{font-family:var(--mono);font-size:11px;color:var(--gold);text-transform:uppercase}
-.wd .tt{font-size:13.5px;color:var(--white);line-height:1.2}
-.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.13)}
-.dot.g{background:var(--green)} .dot.a{background:var(--amber)} .dot.r{background:var(--red)}
-.ficha{border:1px solid var(--hairs);border-radius:11px;overflow:hidden;margin-bottom:10px}
-.ficha img{width:100%;display:block}
-.ficha .fb{padding:12px}
-.ficha h3{font-family:var(--disp);font-size:15px;text-transform:uppercase;color:var(--white);margin:0 0 8px}
-.bar{display:flex;align-items:flex-end;gap:3px;height:110px;margin:10px 0}
-.bar div{flex:1;background:var(--hairs);border-radius:3px 3px 0 0;min-height:3px}
-.mono{font-family:var(--mono);font-size:11px;color:var(--goldp)}
-.hide{display:none}
-/* progreso del dia */
-.prog{margin-bottom:12px}
-.prog .pt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.prog .pn{font-family:var(--disp);font-size:22px;color:var(--white)}
-.prog .pl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:700}
-.pbar{height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
-.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--goldl));
-border-radius:4px;transition:width .3s}
-.pbar.full i{background:linear-gradient(90deg,var(--green),#8fd6a8)}
-/* carga por ejercicio */
-.kg{display:flex;align-items:center;gap:6px;margin-top:5px}
-.kg input{width:66px;padding:5px 7px;font-size:13px;border-radius:6px;font-family:var(--mono);
-text-align:center}
-.kg span{font-size:10.5px;color:var(--dim)}
-.kg b{color:var(--goldp);font-family:var(--mono);font-weight:400}
-/* cronometro */
-.tm{position:fixed;inset:0;background:rgba(4,9,26,.97);z-index:99;display:flex;
-flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-.tm .n{font-family:var(--disp);font-size:88px;line-height:1;color:var(--white)}
-.tm .n.rest{color:var(--goldl)}
-.tm .s{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
-font-weight:800;margin-bottom:10px}
-.tm .q{font-size:14px;color:var(--dim);margin:14px 0 22px;max-width:300px}
-.tm .row{justify-content:center}
-.ring{width:210px;height:210px;border-radius:50%;border:3px solid var(--hairs);
-display:flex;align-items:center;justify-content:center;margin-bottom:18px;
-box-shadow:0 0 40px rgba(201,162,39,.15)}
-.ring.run{border-color:var(--gold)}
-.ring.rest{border-color:var(--goldl);border-style:dashed}
-.streak{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--dim)}
-.streak b{font-family:var(--disp);font-size:26px;color:var(--goldl);line-height:1}
-.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
-.wk div{height:26px;border-radius:5px;background:rgba(255,255,255,.06);display:flex;
-align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--dim)}
-.wk div.ok{background:rgba(84,179,122,.28);color:#bfe8cd}
-.wk div.mid{background:rgba(232,185,59,.28);color:#f0dca8}
-.wk div.no{background:rgba(226,104,90,.25);color:#f0c4bc}
-"""
+from css_nuevo import CSS  # noqa: E402
 
 HTML = """<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0A1733">
+<meta name="theme-color" content="#FBFBFA" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#0A0A09" media="(prefers-color-scheme:dark)">
+<meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Readaptación">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -211,10 +58,10 @@ HTML = """<!DOCTYPE html>
 <div class="wrap" id="app"></div>
 <div id="tm"></div>
 <nav class="nav">
-  <button data-v="hoy" class="on"><span class="ic">☑</span>Hoy</button>
-  <button data-v="semana"><span class="ic">▦</span>Semana</button>
-  <button data-v="manual"><span class="ic">◈</span>Manual</button>
-  <button data-v="datos"><span class="ic">▤</span>Datos</button>
+  <button data-v="hoy" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Hoy</button>
+  <button data-v="semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>Semana</button>
+  <button data-v="manual"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5A2.5 2.5 0 0 1 4 20.5z"/></svg>Manual</button>
+  <button data-v="datos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2"/></svg>Datos</button>
 </nav>
 <script>
 const D = __DATA__;
@@ -226,6 +73,13 @@ if (!S.cfg) S.cfg = {};
 if (!S.cfg.extra) S.cfg.extra = {};
 if (!S.reg) S.reg = {};
 const save = () => localStorage.setItem(K, JSON.stringify(S));
+
+/* ── tema ─────────────────────────────────────────────────── */
+function aplicaTema() {
+  const m = S.cfg.tema || "auto";
+  const r = document.documentElement;
+  if (m === "auto") r.removeAttribute("data-t"); else r.setAttribute("data-t", m);
+}
 
 /* ── fechas ───────────────────────────────────────────────── */
 /* ISO en hora LOCAL: toISOString() pasa a UTC y en horario de verano
@@ -369,14 +223,17 @@ function vistaHoy() {
   const i = s.info;
   let h = "";
 
-  h += '<div class="top"><span class="pill">' + i.b.id + ' · ' + esc(i.b.nombre.toUpperCase()) +
-       '</span><span class="pill solid">DÍA ' + i.n + ' DE ' + i.b.dias + '</span></div>';
+  h += '<div class="top"><span class="pill">' + i.b.id + ' · ' + esc(i.b.nombre) +
+       '</span><span class="pill solid">Día ' + i.n + ' de ' + i.b.dias + '</span></div>';
 
-  h += '<div class="daynav"><button data-nav="-1">‹</button><div class="d">' +
-       esc(largo(FECHA)) + (FECHA === HOY0 ? ' · hoy' : '') +
-       '</div><button data-nav="1">›</button></div>';
+  h += '<div class="daynav">' +
+       '<button data-nav="-1" aria-label="Día anterior"><svg viewBox="0 0 24 24" fill="none" ' +
+       'stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>' +
+       '<div class="d">' + (FECHA === HOY0 ? '<b>Hoy</b> · ' : '') + esc(largo(FECHA)) + '</div>' +
+       '<button data-nav="1" aria-label="Día siguiente"><svg viewBox="0 0 24 24" fill="none" ' +
+       'stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>';
 
-  h += '<h1>' + esc(s.base.titulo.toUpperCase()) + '</h1>';
+  h += '<h1>' + esc(s.base.titulo) + '</h1>';
   h += '<div class="tags"><span class="tag on">Isométrico ' + s.pct + ' %</span>' +
        '<span class="tag">' + esc(i.b.nombre) + '</span>' +
        '<span class="tag">Proteína 137 g</span></div>';
@@ -394,7 +251,7 @@ function vistaHoy() {
   /* semaforo de la mañana */
   h += '<div class="card"><div class="ch"><span class="cn">01</span>' +
        '<h2 class="ct">Dolor de esta mañana</h2></div>' +
-       '<p style="margin:0 0 8px;font-size:13.5px;color:var(--dim)">Antes de levantarte de la cama. ' +
+       '<p style="margin:0 0 8px;font-size:13.5px;color:var(--ink-3)">Antes de levantarte de la cama. ' +
        'Es lo que decide la sesión de hoy.</p>' + escala(FECHA, "manana", r.manana);
   if (s.dol !== null) {
     if (s.recorte === "rojo")
@@ -410,7 +267,7 @@ function vistaHoy() {
 
   if (i.b.fuera && i.b.fuera.length) {
     h += '<div class="card"><div class="ch"><span class="cn">✕</span>' +
-         '<h2 class="ct" style="color:var(--red)">Fuera del plan en ' + i.b.id + '</h2></div>' +
+         '<h2 class="ct" style="color:var(--bad)">Fuera del plan en ' + i.b.id + '</h2></div>' +
          '<div class="tags">' + i.b.fuera.map(x =>
             '<span class="tag" style="border-color:rgba(226,104,90,.45);color:#F0B6AC">' +
             esc(x) + '</span>').join("") + '</div></div>';
@@ -454,7 +311,7 @@ function vistaHoy() {
       h += '<ol class="steps">' + sec.items.map(x =>
            '<li><strong>' + esc(x[0]) + '.</strong> ' + esc(x[1]) + '</li>').join("") + '</ol>';
     } else if (sec.tipo === "test") {
-      h += '<p style="font-size:13.5px;color:var(--dim);margin:0 0 8px">Test de la semana. ' +
+      h += '<p style="font-size:13.5px;color:var(--ink-3);margin:0 0 8px">Test de la semana. ' +
            'Se rellena en la pestaña Datos y decide si la semana que viene sube, mantiene o baja.</p>';
       h += '<div class="lab">Squeeze máximo</div>' + escala(FECHA, "squeeze", r.squeeze);
       h += '<div class="lab">Dolor con tos</div>' + escala(FECHA, "tos", r.tos);
@@ -489,7 +346,7 @@ function vistaHoy() {
 
   /* alarma */
   h += '<div class="card"><div class="ch"><span class="cn">!</span>' +
-       '<h2 class="ct" style="color:var(--red)">Parar y consultar</h2></div>' +
+       '<h2 class="ct" style="color:var(--bad)">Parar y consultar</h2></div>' +
        '<ul class="bul"><li>Bulto en la ingle o el escroto, sobre todo al toser.</li>' +
        '<li>Dolor que crece con la tos o al hacer fuerza.</li>' +
        '<li>Dolor testicular fuerte, náuseas, fiebre.</li>' +
@@ -505,8 +362,8 @@ function vistaSemana() {
   const lunes = suma(FECHA, -wd(FECHA));
   const i0 = bloqueDe(FECHA);
   let h = '<div class="top"><span class="pill">' + i0.b.id + ' · ' +
-          esc(i0.b.nombre.toUpperCase()) + '</span><span class="pill solid">SEMANA</span></div>';
-  h += '<h1>LA <span class="g">SEMANA</span></h1><p class="sub">' + esc(i0.b.lema) + '</p>';
+          esc(i0.b.nombre) + '</span><span class="pill solid">Semana</span></div>';
+  h += '<h1>La <span class="g">semana</span></h1><p class="sub">' + esc(i0.b.lema) + '</p>';
   h += '<div class="week">';
   for (let k = 0; k < 7; k++) {
     const f = suma(lunes, k);
@@ -524,7 +381,7 @@ function vistaSemana() {
 
   h += '<div class="card" style="margin-top:14px"><div class="ch"><span class="cn">◆</span>' +
        '<h2 class="ct">Puerta de ' + i0.b.id + '</h2></div>' +
-       '<p style="font-size:13.5px;color:var(--dim);margin:0 0 8px">Los criterios que abren el bloque ' +
+       '<p style="font-size:13.5px;color:var(--ink-3);margin:0 0 8px">Los criterios que abren el bloque ' +
        'siguiente. Si falta uno, el bloque dura una semana más.</p><ul class="bul">' +
        i0.b.puerta.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>' +
        '<button class="btn ghost wide" data-puerta="' + i0.b.id +
@@ -539,11 +396,11 @@ function vistaSemana() {
 /* ── vista MANUAL ─────────────────────────────────────────── */
 let FILTRO = "";
 function vistaManual() {
-  let h = '<div class="top"><span class="pill">MANUAL DE EJERCICIOS</span>' +
-          '<span class="pill solid">' + Object.keys(D.ej).length + ' FICHAS</span></div>';
-  h += '<h1>CÓMO SE HACE <span class="g">CADA COSA</span></h1>';
+  let h = '<div class="top"><span class="pill">Manual de ejercicios</span>' +
+          '<span class="pill solid">' + Object.keys(D.ej).length + ' fichas</span></div>';
+  h += '<h1>Cómo se hace <span class="g">cada cosa</span></h1>';
   h += '<input type="text" id="q" placeholder="Buscar ejercicio" value="' + esc(FILTRO) + '">';
-  h += '<div style="height:12px"></div>';
+  h += '<div style="height:14px"></div><div class="fichas-g">';
   Object.keys(D.ej).forEach(slug => {
     const e = D.ej[slug];
     if (FILTRO && e.nombre.toLowerCase().indexOf(FILTRO.toLowerCase()) < 0) return;
@@ -554,20 +411,20 @@ function vistaManual() {
          esc(e.para_que) + '</p>' +
          '<div class="lab">Cómo se hace</div><ol class="steps">' +
          e.pasos.map(p => '<li>' + esc(p) + '</li>').join("") + '</ol>' +
-         '<div class="lab" style="color:var(--red)">Error frecuente</div>' +
+         '<div class="lab" style="color:var(--bad)">Error frecuente</div>' +
          '<p style="margin:0;font-size:13.5px">' + esc(e.error) + '</p>' +
          (e.aviso ? '<div class="note warn">' + esc(e.aviso) + '</div>' : '') +
          '</div></div>';
   });
-  return h;
+  return h + '</div>';
 }
 
 /* ── vista DATOS ──────────────────────────────────────────── */
 function vistaDatos() {
   const fechas = Object.keys(S.reg).sort();
   const con = fechas.filter(f => S.reg[f].manana !== undefined && S.reg[f].manana !== null);
-  let h = '<div class="top"><span class="pill">HISTORIAL</span><span class="pill solid">' +
-          con.length + ' DÍAS</span></div><h1>TUS <span class="g">DATOS</span></h1>';
+  let h = '<div class="top"><span class="pill">Historial</span><span class="pill solid">' +
+          con.length + ' días</span></div><h1>Tus <span class="g">datos</span></h1>';
 
   /* racha y cumplimiento de la semana */
   const rc = racha();
@@ -599,8 +456,8 @@ function vistaDatos() {
   h += '<div class="bar">' + ult.map(f => {
     const v = (S.reg[f] || {}).manana;
     const alt = v === undefined || v === null ? 3 : Math.max(4, v * 11);
-    const col = v === undefined || v === null ? "var(--hairs)" :
-                (v <= 1 ? "var(--green)" : (v <= 3 ? "var(--amber)" : "var(--red)"));
+    const col = v === undefined || v === null ? "var(--line)" :
+                (v <= 1 ? "var(--ok)" : (v <= 3 ? "var(--warn)" : "var(--bad)"));
     return '<div style="height:' + alt + 'px;background:' + col + '"></div>';
   }).join("") + '</div>';
   const vals = ult.map(f => (S.reg[f] || {}).manana).filter(v => v !== undefined && v !== null);
@@ -608,9 +465,18 @@ function vistaDatos() {
   h += '<div class="note">Media de los días registrados: <span class="mono">' + med +
        '</span> · registrados <span class="mono">' + vals.length + ' de 30</span></div></div>';
 
+  const tm = S.cfg.tema || "auto";
+  h += '<div class="card"><div class="ch"><span class="cn">◐</span>' +
+       '<h2 class="ct">Apariencia</h2></div>' +
+       '<div class="row">' +
+       [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(o =>
+         '<button class="btn ' + (tm === o[0] ? '' : 'ghost') + '" data-tema="' + o[0] + '">' +
+         o[1] + '</button>').join("") + '</div>' +
+       '<div class="note">En automático sigue al sistema: claro de día y oscuro de noche.</div></div>';
+
   h += '<div class="card"><div class="ch"><span class="cn">↓</span>' +
        '<h2 class="ct">Exportar</h2></div>' +
-       '<p style="font-size:13.5px;color:var(--dim);margin:0 0 10px">El CSV sale con el formato de ' +
+       '<p style="font-size:13.5px;color:var(--ink-3);margin:0 0 10px">El CSV sale con el formato de ' +
        '<span class="mono">seguimiento/dolor_24h.csv</span> del proyecto.</p>' +
        '<div class="row"><button class="btn" data-exp="csv">Descargar CSV</button>' +
        '<button class="btn ghost" data-exp="json">Copia de seguridad</button></div></div>';
@@ -680,6 +546,7 @@ document.addEventListener("click", e => {
     if (t.dataset.tm === "salta") { T.seg = 1; return tick(); }
     return cierraTimer(false);
   }
+  if (t.dataset.tema) { S.cfg.tema = t.dataset.tema; save(); aplicaTema(); return render(); }
   if (t.dataset.exp) { exporta(t.dataset.exp); return; }
   if (t.dataset.borrar) {
     if (confirm("Se borra todo el historial. ¿Seguro?")) { S = {reg:{}, cfg:{extra:{}}}; save(); render(); }
@@ -796,6 +663,12 @@ window.__t = {iso, parse, suma, dias, wd, bloqueDe, sesionDe, progresoDe, racha,
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
+
+aplicaTema();
+addEventListener("scroll", () => {
+  const el = document.querySelector(".top");
+  if (el) el.classList.toggle("stuck", scrollY > 6);
+}, {passive: true});
 
 render();
 </script>
