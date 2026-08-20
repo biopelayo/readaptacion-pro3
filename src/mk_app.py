@@ -6,7 +6,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ  # noqa: E402
+from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ, APERTURA  # noqa: E402
 
 IMG = os.path.join(os.path.dirname(HERE), "imagenes", "web")
 DST = os.path.join(os.path.dirname(HERE), "app", "index.html")
@@ -32,7 +32,7 @@ for s in slugs:
         IMGS[s] = med
 print("imagenes embebidas:", len(IMGS))
 
-DATA = dict(bloques=BLOQUES, micro=MICRO, nutricion=NUTRICION,
+DATA = dict(bloques=BLOQUES, micro=MICRO, apertura=APERTURA, nutricion=NUTRICION,
             momentos=MOMENTOS, iso=ISO, ej=EJ, img=IMGS)
 
 from css_nuevo import CSS  # noqa: E402
@@ -134,7 +134,9 @@ function prolonga(id, d) {
 /* ── composicion del dia ──────────────────────────────────── */
 function sesionDe(fecha) {
   const info = bloqueDe(fecha);
-  const base = D.micro[info.b.id][wd(fecha)];
+  /* el dia 1 del proceso es la linea base, caiga en el dia que caiga */
+  const base = (info.b.id === D.bloques[0].id && info.n === 1 && D.apertura)
+    ? D.apertura : D.micro[info.b.id][wd(fecha)];
   const r = S.reg[fecha] || {};
   const dol = (r.manana === undefined || r.manana === null) ? null : r.manana;
   /* cada bloque lleva su progresion: R1 sube de 50 a 80, el resto mantiene 80 */

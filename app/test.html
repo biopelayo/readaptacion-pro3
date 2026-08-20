@@ -66,74 +66,74 @@ document.getElementById("fr").onload = function () {
   t("wd(): 17 de agosto de 2026 es lunes", () => eq(T.wd("2026-08-17"), 0));
   t("wd(): 19 de agosto de 2026 es miércoles", () => eq(T.wd("2026-08-19"), 2));
   t("wd(): 25 de octubre de 2026 es domingo", () => eq(T.wd("2026-10-25"), 6));
-  t("dias() cuenta bien un salto largo", () => eq(T.dias("2026-08-17", "2026-10-25"), 69));
+  t("dias() cuenta bien un salto largo", () => eq(T.dias("2026-08-20", "2026-10-28"), 69));
 
   /* ── bloques ────────────────────────────────────────────── */
-  t("el 17 de agosto es R1 día 1", () => {
-    const b = T.bloqueDe("2026-08-17"); return eq(b.b.id + "/" + b.n, "R1/1");
+  t("el 20 de agosto es R1 día 1", () => {
+    const b = T.bloqueDe("2026-08-20"); return eq(b.b.id + "/" + b.n, "R1/1");
   });
-  t("el 19 de agosto es R1 día 3", () => {
-    const b = T.bloqueDe("2026-08-19"); return eq(b.b.id + "/" + b.n, "R1/3");
+  t("el 22 de agosto es R1 día 3", () => {
+    const b = T.bloqueDe("2026-08-22"); return eq(b.b.id + "/" + b.n, "R1/3");
   });
-  t("el 30 de agosto cierra R1 en el día 14", () => {
-    const b = T.bloqueDe("2026-08-30"); return eq(b.b.id + "/" + b.n, "R1/14");
+  t("el 2 de septiembre cierra R1 en el día 14", () => {
+    const b = T.bloqueDe("2026-09-02"); return eq(b.b.id + "/" + b.n, "R1/14");
   });
-  t("el 31 de agosto abre R2", () => eq(T.bloqueDe("2026-08-31").b.id, "R2"));
-  t("el 14 de septiembre abre R3", () => eq(T.bloqueDe("2026-09-14").b.id, "R3"));
-  t("el 28 de septiembre abre R4", () => eq(T.bloqueDe("2026-09-28").b.id, "R4"));
-  t("el 12 de octubre abre R5", () => eq(T.bloqueDe("2026-10-12").b.id, "R5"));
-  t("el 25 de octubre es el último día de R5", () => {
-    const b = T.bloqueDe("2026-10-25"); return eq(b.b.id + "/" + b.n, "R5/14");
+  t("el 3 de septiembre abre R2", () => eq(T.bloqueDe("2026-09-03").b.id, "R2"));
+  t("el 17 de septiembre abre R3", () => eq(T.bloqueDe("2026-09-17").b.id, "R3"));
+  t("el 1 de octubre abre R4", () => eq(T.bloqueDe("2026-10-01").b.id, "R4"));
+  t("el 15 de octubre abre R5", () => eq(T.bloqueDe("2026-10-15").b.id, "R5"));
+  t("el 28 de octubre es el último día de R5", () => {
+    const b = T.bloqueDe("2026-10-28"); return eq(b.b.id + "/" + b.n, "R5/14");
   });
-  t("los 68 días del 19-ago al 25-oct tienen bloque y sesión", () => {
-    let f = "2026-08-19", n = 0;
-    while (T.dias(f, "2026-10-25") >= 0) {
+  t("los 70 días del 20-ago al 28-oct tienen bloque y sesión", () => {
+    let f = "2026-08-20", n = 0;
+    while (T.dias(f, "2026-10-28") >= 0) {
       const s = T.sesionDe(f);
       if (!s || !s.base || !s.base.titulo) return "sin sesión en " + f;
       n++; f = T.suma(f, 1);
     }
-    return eq(n, 68);
+    return eq(n, 70);
   });
 
   /* ── adaptación por dolor ───────────────────────────────── */
   const guarda = JSON.parse(JSON.stringify(T.S));
   t("con dolor 1 la sesión se mantiene entera", () => {
-    T.S.reg["2026-08-19"] = {manana: 1};
-    const s = T.sesionDe("2026-08-19");
+    T.S.reg["2026-08-22"] = {manana: 1};
+    const s = T.sesionDe("2026-08-22");
     return eq(s.recorte, null);
   });
   t("con dolor 3 desaparecen gimnasio y campo", () => {
-    T.S.reg["2026-08-24"] = {manana: 3};
-    const s = T.sesionDe("2026-08-24");
+    T.S.reg["2026-08-27"] = {manana: 3};
+    const s = T.sesionDe("2026-08-27");
     const tiene = s.secs.some(x => x.n === "03" || x.n === "07");
     return tiene ? "sigue habiendo gimnasio o campo" : eq(s.recorte, "ambar");
   });
   t("con dolor 3 el isométrico baja 20 puntos", () => {
-    const a = T.sesionDe("2026-08-24");
-    T.S.reg["2026-08-24"] = {manana: 1};
-    const b = T.sesionDe("2026-08-24");
+    const a = T.sesionDe("2026-08-27");
+    T.S.reg["2026-08-27"] = {manana: 1};
+    const b = T.sesionDe("2026-08-27");
     return a.pct === b.pct - 20 ? true : "sin bajada: " + a.pct + " vs " + b.pct;
   });
   t("con dolor 5 solo queda movilidad", () => {
-    T.S.reg["2026-08-25"] = {manana: 5};
-    const s = T.sesionDe("2026-08-25");
+    T.S.reg["2026-08-28"] = {manana: 5};
+    const s = T.sesionDe("2026-08-28");
     return s.secs.length === 1 && s.secs[0].n === "02" ? true :
            "quedan " + s.secs.map(x => x.n).join(",");
   });
 
   /* ── progresión del isométrico ──────────────────────────── */
   t("el isométrico empieza en 50 %", () => {
-    T.S.reg = {}; return eq(T.sesionDe("2026-08-17").pct, 50);
+    T.S.reg = {}; return eq(T.sesionDe("2026-08-20").pct, 50);
   });
   t("el isométrico llega al 80 % al final de R1", () =>
-    eq(T.sesionDe("2026-08-30").pct, 80));
+    eq(T.sesionDe("2026-09-02").pct, 80));
   t("el isométrico NO se reinicia al empezar R2", () =>
-    eq(T.sesionDe("2026-08-31").pct, 80));
+    eq(T.sesionDe("2026-09-03").pct, 80));
   t("el isométrico sigue al 80 % en el último día de R5", () =>
-    eq(T.sesionDe("2026-10-25").pct, 80));
+    eq(T.sesionDe("2026-10-28").pct, 80));
   t("ningún día de R2 a R5 baja del 80 %", () => {
-    let f = "2026-08-31", bajos = [];
-    while (T.dias(f, "2026-10-25") >= 0) {
+    let f = "2026-09-03", bajos = [];
+    while (T.dias(f, "2026-10-28") >= 0) {
       if (T.sesionDe(f).pct < 80) bajos.push(f);
       f = T.suma(f, 1);
     }
@@ -141,30 +141,30 @@ document.getElementById("fr").onload = function () {
   });
 
   /* ── puertas y desfase ──────────────────────────────────── */
-  t("prolongar R1 una semana mantiene el 1 de septiembre en R1", () => {
+  t("prolongar R1 una semana mantiene el 5 de septiembre en R1", () => {
     T.S.cfg.extra = {R1: 7};
-    const b = T.bloqueDe("2026-09-01");
+    const b = T.bloqueDe("2026-09-05");
     T.S.cfg.extra = {};
     return eq(b.b.id, "R1");
   });
   t("prolongar R1 no deja huecos: el día siguiente al cierre abre R2", () => {
     T.S.cfg.extra = {R1: 7};
-    const fin = T.bloqueDe("2026-09-06");
-    const sig = T.bloqueDe("2026-09-07");
+    const fin = T.bloqueDe("2026-09-09");
+    const sig = T.bloqueDe("2026-09-10");
     T.S.cfg.extra = {};
     return fin.b.id === "R1" && fin.n === 21 && sig.b.id === "R2" && sig.n === 1
       ? true : "cierre " + fin.b.id + "/" + fin.n + " y sigue " + sig.b.id + "/" + sig.n;
   });
   t("prolongar R1 empuja también el final de R5", () => {
     T.S.cfg.extra = {R1: 7};
-    const b = T.bloqueDe("2026-11-01");
+    const b = T.bloqueDe("2026-11-04");
     T.S.cfg.extra = {};
     return eq(b.b.id, "R5");
   });
   t("todos los días siguen teniendo bloque con un bloque prolongado", () => {
     T.S.cfg.extra = {R1: 7, R3: 14};
-    let f = "2026-08-17", huecos = 0;
-    while (T.dias(f, "2026-11-15") >= 0) {
+    let f = "2026-08-20", huecos = 0;
+    while (T.dias(f, "2026-11-20") >= 0) {
       const b = T.bloqueDe(f);
       if (b.antes) huecos++;
       f = T.suma(f, 1);
@@ -174,14 +174,14 @@ document.getElementById("fr").onload = function () {
   });
 
   /* ── tracker ────────────────────────────────────────────── */
-  t("el progreso arranca a cero", () => eq(T.progresoDe("2026-08-19").hechas, 0));
+  t("el progreso arranca a cero", () => eq(T.progresoDe("2026-08-22").hechas, 0));
   t("marcar tareas sube el progreso", () => {
-    T.S.reg["2026-08-19"] = {hechos: ["02_0", "02_1"], comidas: [0]};
-    const p = T.progresoDe("2026-08-19");
+    T.S.reg["2026-08-22"] = {hechos: ["02_0", "02_1"], comidas: [0]};
+    const p = T.progresoDe("2026-08-22");
     return eq(p.hechas, 3);
   });
   t("el porcentaje nunca pasa de 100", () => {
-    const p = T.progresoDe("2026-08-19");
+    const p = T.progresoDe("2026-08-22");
     return p.pct <= 100 ? true : "pct = " + p.pct;
   });
   t("la racha cuenta días seguidos", () => {
@@ -201,8 +201,8 @@ document.getElementById("fr").onload = function () {
   });
   t("ultimaCarga recuerda el peso anterior", () => {
     T.S.reg = {};
-    T.S.reg["2026-08-17"] = {cargas: {"press-pecho-maquina": "40"}};
-    const u = T.ultimaCarga("press-pecho-maquina", "2026-08-24");
+    T.S.reg["2026-08-20"] = {cargas: {"press-pecho-maquina": "40"}};
+    const u = T.ultimaCarga("press-pecho-maquina", "2026-08-27");
     return u ? eq(u.kg, "40") : "no encontró la carga";
   });
 
@@ -287,6 +287,76 @@ document.getElementById("fr").onload = function () {
                   zona: "ingle derecha"};
   T.S.reg[T.suma(hoy, -7)] = {cargas: {"press-pecho-maquina": "37,5"}};
   T.setFecha(hoy); T.setVista("hoy");
+
+  /* ── ejes nuevos: velocidad, golpeo y tren superior ─────── */
+  t("el día 1 es la línea base, no el microciclo", () =>
+    eq(T.sesionDe("2026-08-20").base.titulo, "Línea base y arranque"));
+  t("el día 2 ya sigue el microciclo normal", () =>
+    T.sesionDe("2026-08-21").base.titulo !== "Línea base y arranque" ? true : "sigue en apertura");
+  t("no hay velocidad ni sprint antes de R3", () => {
+    let f = "2026-08-20", malos = [];
+    while (T.dias(f, "2026-09-16") >= 0) {
+      const s = T.sesionDe(f);
+      const txt = JSON.stringify(s.secs).toLowerCase();
+      if (/sprint|arrancada|velocidad lanzada/.test(txt)) malos.push(f);
+      f = T.suma(f, 1);
+    }
+    return malos.length ? "velocidad en " + malos.join(", ") : true;
+  });
+  t("no hay golpeo ni balón antes de R3", () => {
+    let f = "2026-08-20", malos = [];
+    while (T.dias(f, "2026-09-16") >= 0) {
+      const s = T.sesionDe(f);
+      const txt = JSON.stringify(s.secs).toLowerCase();
+      if (/golpeo|falta|córner|corner/.test(txt)) malos.push(f);
+      f = T.suma(f, 1);
+    }
+    return malos.length ? "golpeo en " + malos.join(", ") : true;
+  });
+  /* se mira el TITULO de la seccion: el cuerpo de R3 menciona el balón parado
+     precisamente para prohibirlo, y buscar en texto libre lo daba por prescrito */
+  t("ninguna sesión de balón parado antes de R4", () => {
+    let f = "2026-08-20", malos = [];
+    while (T.dias(f, "2026-09-30") >= 0) {
+      if (T.sesionDe(f).secs.some(s => /balón parado/i.test(s.titulo))) malos.push(f);
+      f = T.suma(f, 1);
+    }
+    return malos.length ? "balón parado en " + malos.join(", ") : true;
+  });
+  t("R3 avisa por escrito de que el balón parado todavía no toca", () => {
+    const txt = JSON.stringify(T.D.micro.R3).toLowerCase();
+    return /no hay balón parado|sin balón parado/.test(txt) ? true : "R3 no lo advierte";
+  });
+  t("R4 y R5 sí traen balón parado", () => {
+    let f = "2026-10-01", con = 0;
+    while (T.dias(f, "2026-10-28") >= 0) {
+      if (T.sesionDe(f).secs.some(s => /balón parado/i.test(s.titulo))) con++;
+      f = T.suma(f, 1);
+    }
+    return con >= 3 ? true : "solo " + con + " días con balón parado";
+  });
+  t("hay gimnasio de tren superior en los cinco bloques", () => {
+    const sin = [];
+    T.D.bloques.forEach(b => {
+      let hay = false;
+      for (let d = 0; d < 7; d++) {
+        const txt = JSON.stringify(T.D.micro[b.id][d]).toLowerCase();
+        if (/press|jalón|remo|curl|elevaciones/.test(txt)) hay = true;
+      }
+      if (!hay) sin.push(b.id);
+    });
+    return sin.length ? "sin tren superior: " + sin.join(", ") : true;
+  });
+  t("el aductor se trabaja todos los días de todos los bloques", () => {
+    const sin = [];
+    T.D.bloques.forEach(b => {
+      for (let d = 0; d < 6; d++) {   /* el domingo es descanso */
+        const txt = JSON.stringify(T.D.micro[b.id][d]).toLowerCase();
+        if (!/isométrica|copenhagen|aductor/.test(txt)) sin.push(b.id + " d" + d);
+      }
+    });
+    return sin.length ? "sin aductor: " + sin.join(", ") : true;
+  });
 
   const res = document.getElementById("res");
   res.className = ko === 0 ? "good" : "bad";
