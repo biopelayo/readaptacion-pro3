@@ -359,40 +359,53 @@ textarea{min-height:5.5rem;resize:vertical;line-height:1.5}
   text-wrap:pretty}
 .tm .row{justify-content:center}
 
-/* ── graphical abstract ───────────────────────────────────── */
-.ga{position:fixed;inset:0;z-index:120;background:var(--bg);overflow-y:auto;
-  animation:gaIn .5s cubic-bezier(.2,.8,.2,1)}
-@keyframes gaIn{from{opacity:0}to{opacity:1}}
-.ga-in{max-width:46rem;margin:0 auto;padding:calc(env(safe-area-inset-top) + 2rem) var(--pad) 3rem;
-  min-height:100%;display:flex;flex-direction:column;justify-content:center}
-.ga-k{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--ink-3);margin-bottom:.7rem}
-.ga h2{font-size:clamp(1.9rem,7.5vw,2.7rem);line-height:1.05;letter-spacing:-.034em;
-  font-weight:660;margin:0 0 .8rem;color:var(--ink);text-wrap:balance}
-.ga h2 em{font-style:normal;color:var(--ink-3);font-weight:400}
-.ga .lede{font-size:1.05rem;color:var(--ink-2);line-height:1.5;margin:0 0 1.6rem;
-  text-wrap:pretty}
-.ga svg{width:100%;height:auto;display:block;margin:.4rem 0 1.4rem}
-.ga-cifras{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.5rem}
-.ga-c{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);
-  padding:.85rem .6rem;text-align:center}
-.ga-c b{display:block;font-size:1.45rem;font-weight:660;letter-spacing:-.03em;color:var(--ink);
-  line-height:1}
-.ga-c span{display:block;font-size:.7rem;color:var(--ink-3);margin-top:.3rem;line-height:1.25}
-.ga-pasos{display:grid;gap:.55rem;margin-bottom:1.6rem}
-.ga-p{display:grid;grid-template-columns:2rem 1fr;gap:.85rem;align-items:start;
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:.9rem 1rem}
-.ga-p i{font-style:normal;width:2rem;height:2rem;border-radius:999px;background:var(--accent);
-  color:var(--on-accent);font-size:.85rem;font-weight:700;display:flex;align-items:center;
-  justify-content:center}
-.ga-p b{display:block;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
-.ga-p span{font-size:.9rem;color:var(--ink-2);line-height:1.4}
-.ga-cierre{background:var(--surface-2);border-left:3px solid var(--ink);border-radius:0 var(--r-m) var(--r-m) 0;
-  padding:1rem 1.1rem;font-size:.98rem;color:var(--ink-2);line-height:1.5;margin-bottom:1.5rem}
-.ga-cierre b{color:var(--ink)}
-.ga-btn{display:flex;gap:.6rem;align-items:center}
-.ga-mini{font-size:.82rem;color:var(--ink-3);display:flex;align-items:center;gap:.4rem;
-  cursor:pointer;padding:.5rem}
+/* ── pantalla de arranque ─────────────────────────────────── */
+.sp{position:fixed;inset:0;z-index:120;background:var(--bg);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;
+  animation:spIn .45s ease-out}
+.sp.out{animation:spOut .5s ease-in forwards;pointer-events:none}
+@keyframes spIn{from{opacity:0}to{opacity:1}}
+@keyframes spOut{to{opacity:0;transform:scale(1.04)}}
+.sp-marca{font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-4);animation:sube .6s .1s both}
+.sp-anillo{position:relative;width:min(72vw,19rem);aspect-ratio:1}
+.sp-anillo svg{width:100%;height:100%;transform:rotate(-90deg)}
+.sp-anillo .base{stroke:var(--line);fill:none}
+.sp-anillo .hecho{stroke:var(--ink-4);fill:none;stroke-linecap:round}
+.sp-anillo .vivo{stroke:var(--ink);fill:none;stroke-linecap:round;
+  animation:dibuja 1.15s cubic-bezier(.25,1,.35,1) .25s both}
+@keyframes dibuja{from{stroke-dashoffset:var(--vacio)}to{stroke-dashoffset:var(--lleno)}}
+.sp-centro{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:.1rem}
+.sp-dia{font-size:clamp(3.4rem,17vw,5rem);font-weight:680;letter-spacing:-.055em;
+  line-height:.9;color:var(--ink);animation:sube .55s .55s both;font-variant-numeric:tabular-nums}
+.sp-de{font-size:.82rem;color:var(--ink-3);letter-spacing:.02em;animation:sube .55s .68s both}
+.sp-bloque{text-align:center;animation:sube .55s .8s both}
+.sp-bloque b{display:block;font-size:1.35rem;font-weight:640;letter-spacing:-.025em;
+  color:var(--ink);line-height:1.15}
+.sp-bloque span{display:block;font-size:.9rem;color:var(--ink-3);margin-top:.25rem}
+@keyframes sube{from{opacity:0;transform:translateY(.6rem)}to{opacity:1;transform:none}}
+.sp-puntos{display:flex;gap:.45rem;animation:sube .55s .95s both}
+.sp-puntos i{width:.45rem;height:.45rem;border-radius:999px;background:var(--line-2);
+  display:block}
+.sp-puntos i.on{background:var(--ink);transform:scale(1.35)}
+.sp-puntos i.ya{background:var(--ink-4)}
+.sp-tap{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 2rem);
+  font-size:.78rem;color:var(--ink-4);animation:latir 2.4s 1.4s infinite}
+@keyframes latir{0%,100%{opacity:.35}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){
+  .sp *,.sp{animation:none!important}
+  .sp-anillo .vivo{stroke-dashoffset:var(--lleno)}
+}
+
+/* ── cómo funciona, dentro de Ajustes ─────────────────────── */
+.cf{display:grid;gap:.5rem;margin-top:.3rem}
+.cf-p{display:grid;grid-template-columns:1.7rem 1fr;gap:.7rem;align-items:start;
+  font-size:.92rem;line-height:1.4;color:var(--ink-2)}
+.cf-p i{font-style:normal;width:1.7rem;height:1.7rem;border-radius:999px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+  font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cf-p b{color:var(--ink);font-weight:600}
 
 /* ── resumen del día ──────────────────────────────────────── */
 .sum{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-l);

@@ -270,60 +270,75 @@ function minutosDe(secs) {
   return m;
 }
 
-/* ── graphical abstract: por que existe esto y como funciona ─ */
-function gaSVG() {
+/* ── pantalla de arranque: el anillo de los cinco bloques ──── */
+function splashHTML() {
+  const i = bloqueDe(HOY0);
   const B = D.bloques;
-  const W = 680, H = 190, x0 = 24, x1 = W - 24, ancho = (x1 - x0) / B.length;
-  let barras = "", etiquetas = "";
-  B.forEach((b, i) => {
-    const x = x0 + i * ancho;
-    const alto = 26 + i * 13;
-    barras += '<rect x="' + (x + 3) + '" y="' + (128 - alto) + '" width="' + (ancho - 6) +
-      '" height="' + alto + '" rx="7" fill="currentColor" opacity="' + (0.20 + i * 0.16) + '"/>';
-    etiquetas += '<text x="' + (x + ancho / 2) + '" y="146" text-anchor="middle" ' +
-      'font-size="12.5" font-weight="600" fill="currentColor">' + b.id + '</text>' +
-      '<text x="' + (x + ancho / 2) + '" y="163" text-anchor="middle" font-size="10.5" ' +
-      'fill="currentColor" opacity=".55">' + esc(b.nombre.split(":")[0].split(" y ")[0]) + '</text>';
+  const idx = Math.max(0, B.findIndex(b => b.id === i.b.id));
+  const R = 128, C = 2 * Math.PI * R;          /* circunferencia del anillo */
+  const hueco = 10;                             /* separacion entre bloques */
+  const paso = C / B.length;
+  const largo = paso - hueco;
+
+  let arcos = "";
+  B.forEach((b, k) => {
+    const off = -k * paso;
+    arcos += '<circle class="base" cx="150" cy="150" r="' + R + '" stroke-width="13" ' +
+      'stroke-dasharray="' + largo + ' ' + (C - largo) + '" stroke-dashoffset="' + off + '"/>';
+    if (k < idx) {
+      arcos += '<circle class="hecho" cx="150" cy="150" r="' + R + '" stroke-width="13" ' +
+        'stroke-dasharray="' + largo + ' ' + (C - largo) + '" stroke-dashoffset="' + off + '"/>';
+    }
   });
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Los cinco bloques">' +
-    '<line x1="' + x0 + '" y1="128.5" x2="' + x1 + '" y2="128.5" stroke="currentColor" ' +
-    'stroke-opacity=".22"/>' + barras + etiquetas +
-    '<text x="' + x0 + '" y="22" font-size="11" font-weight="700" fill="currentColor" ' +
-    'opacity=".5" letter-spacing="1.2">CARGA</text>' +
-    '<text x="' + x1 + '" y="22" text-anchor="end" font-size="11" fill="currentColor" ' +
-    'opacity=".5">20 ago → 28 oct</text></svg>';
+  /* el bloque en curso se dibuja hasta el dia de hoy */
+  const frac = Math.max(0.04, Math.min(1, i.n / i.dur));
+  const vivo = largo * frac;
+  arcos += '<circle class="vivo" cx="150" cy="150" r="' + R + '" stroke-width="13" ' +
+    'stroke-dasharray="' + vivo + ' ' + (C - vivo) + '" ' +
+    'style="--vacio:' + (-idx * paso + vivo) + 'px;--lleno:' + (-idx * paso) + 'px"/>';
+
+  const puntos = B.map((b, k) =>
+    '<i class="' + (k === idx ? "on" : (k < idx ? "ya" : "")) + '"></i>').join("");
+
+  return '<div class="sp" id="sp">' +
+    '<div class="sp-marca">Readaptación</div>' +
+    '<div class="sp-anillo"><svg viewBox="0 0 300 300" aria-hidden="true">' + arcos + '</svg>' +
+    '<div class="sp-centro"><div class="sp-dia">' + i.n + '</div>' +
+    '<div class="sp-de">de ' + i.dur + ' · ' + i.b.id + '</div></div></div>' +
+    '<div class="sp-bloque"><b>' + esc(i.b.nombre) + '</b>' +
+    '<span>' + esc(largoFecha(HOY0)) + '</span></div>' +
+    '<div class="sp-puntos">' + puntos + '</div>' +
+    '<div class="sp-tap">toca para entrar</div></div>';
+}
+const largoFecha = s => { const d = parse(s);
+  return DS[wd(s)] + " " + d.getDate() + " de " + MS[d.getMonth()]; };
+
+function cierraSplash() {
+  const el = document.getElementById("sp");
+  if (!el) return;
+  el.classList.add("out");
+  setTimeout(() => { const s = document.getElementById("ga-slot"); if (s) s.innerHTML = ""; }, 480);
 }
 
-function gaHTML() {
-  const nEj = Object.keys(D.ej).length;
-  return '<div class="ga" id="ga"><div class="ga-in">' +
-    '<div class="ga-k">Readaptación · pubalgia sin hernia</div>' +
-    '<h2>Se avanza por función, <em>no por calendario</em></h2>' +
-    '<p class="lede">Diez días de reposo no apagaron el dolor. Cuando eso pasa, el problema está ' +
-    'en cuánta carga aguanta el tejido, y esa se recupera cargando poco, a menudo y midiendo.</p>' +
-    gaSVG() +
-    '<div class="ga-cifras">' +
-    '<div class="ga-c"><b>70</b><span>días de plan</span></div>' +
-    '<div class="ga-c"><b>5</b><span>bloques con puerta</span></div>' +
-    '<div class="ga-c"><b>' + nEj + '</b><span>ejercicios con ficha</span></div>' +
-    '<div class="ga-c"><b>1</b><span>número cada mañana</span></div></div>' +
-    '<div class="ga-pasos">' +
-    '<div class="ga-p"><i>1</i><div><b>Anotas el dolor al despertar</b>' +
-    '<span>Antes de levantarte. Es el único dato que no puede inventar nadie.</span></div></div>' +
-    '<div class="ga-p"><i>2</i><div><b>La app compone la sesión</b>' +
-    '<span>Con 0-2 va entera. Con 3 caen gimnasio y campo. Con 4 se suspende y llamas al fisio.</span></div></div>' +
-    '<div class="ga-p"><i>3</i><div><b>Marcas y registras lo que haces</b>' +
-    '<span>Cargas, tareas y dolor. Sin registro, un bloque no puede darse por superado.</span></div></div>' +
-    '<div class="ga-p"><i>4</i><div><b>El día siguiente es el juez</b>' +
-    '<span>Si una puerta no se abre, el bloque se prolonga y el resto se recoloca solo.</span></div></div>' +
-    '</div>' +
-    '<div class="ga-cierre">El orden importa tanto como el contenido: primero apagar la irritación, ' +
-    'después fuerza, luego velocidad y al final <b>el balón parado</b>. Las faltas son lo tuyo y ' +
-    'también lo que más castiga el pubis, así que llegan las últimas y con los golpeos contados.</div>' +
-    '<div class="ga-btn"><button class="btn" data-ga="cerrar">Ver el día de hoy</button>' +
-    '<label class="ga-mini"><input type="checkbox" data-ga="nomas"' +
-    (S.cfg.noGa ? " checked" : "") + '> No mostrarlo al abrir</label></div>' +
-    '</div></div>';
+/* la explicacion larga vive en Ajustes, no en la pantalla de cada manana */
+function comoFunciona() {
+  const pasos = [
+    ["Anotas el dolor al despertar",
+     "Antes de levantarte. Es el único dato que no puede inventar nadie."],
+    ["La app compone la sesión",
+     "Con 0-2 va entera. Con 3 caen gimnasio y campo. Con 4 se suspende y llamas al fisio."],
+    ["Marcas y registras lo que haces",
+     "Cargas, tareas y dolor. Sin registro, un bloque no puede darse por superado."],
+    ["El día siguiente es el juez",
+     "Si una puerta no se abre, el bloque se prolonga y el resto se recoloca solo."],
+  ];
+  return '<div class="card"><div class="ch"><span class="cn">?</span>' +
+    '<h2 class="ct">Cómo funciona</h2></div><div class="cf">' +
+    pasos.map((p, k) => '<div class="cf-p"><i>' + (k + 1) + '</i><div><b>' + p[0] + '.</b> ' +
+      p[1] + '</div></div>').join("") + '</div>' +
+    '<div class="note">Primero apagar la irritación, después fuerza, luego velocidad y al final ' +
+    'el balón parado. Las faltas son lo tuyo y también lo que más castiga el pubis, así que llegan ' +
+    'las últimas y con los golpeos contados.</div></div>';
 }
 
 /* ── resumen del dia en un vistazo ──────────────────────────── */
@@ -630,6 +645,7 @@ function vistaDatos() {
   h += '<div class="note">Media de los días registrados: <span class="mono">' + med +
        '</span> · registrados <span class="mono">' + vals.length + ' de 30</span></div></div>';
 
+  h += comoFunciona();
   const tm = S.cfg.tema || "auto";
   h += '<div class="card"><div class="ch"><span class="cn">◐</span>' +
        '<h2 class="ct">Apariencia</h2></div>' +
@@ -637,7 +653,7 @@ function vistaDatos() {
        [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(o =>
          '<button class="btn ' + (tm === o[0] ? '' : 'ghost') + '" data-tema="' + o[0] + '">' +
          o[1] + '</button>').join("") + '</div>' +
-       '<button class="btn ghost wide" data-abstract="1">Ver de nuevo la presentación</button>' +
+       '<button class="btn ghost wide" data-abstract="1">Ver la pantalla de arranque</button>' +
        '<div class="note">En automático sigue al sistema: claro de día y oscuro de noche.</div>' +
        '<div class="lab">Tamaño del texto</div><div class="row">' +
        [["n", "Normal"], ["g", "Grande"], ["xg", "Enorme"]].map(o =>
@@ -685,6 +701,7 @@ function render() {
 }
 
 document.addEventListener("click", e => {
+  if (e.target.closest("#sp")) { cierraSplash(); return; }
   const t = e.target.closest("button, .ex, .wd, figure[data-ficha]");
   if (!t) return;
   if (t.dataset.v) { VISTA = t.dataset.v; return render(); }
@@ -720,8 +737,11 @@ document.addEventListener("click", e => {
     if (t.dataset.tm === "salta") { T.seg = 1; return tick(); }
     return cierraTimer(false);
   }
-  if (t.dataset.ga === "cerrar") { document.getElementById("ga-slot").innerHTML = ""; return; }
-  if (t.dataset.abstract) { document.getElementById("ga-slot").innerHTML = gaHTML(); return; }
+  if (t.closest && t.closest("#sp")) { cierraSplash(); return; }
+  if (t.dataset.abstract) {
+    document.getElementById("ga-slot").innerHTML = splashHTML();
+    setTimeout(cierraSplash, 2600); return;
+  }
   if (t.dataset.tema) { S.cfg.tema = t.dataset.tema; save(); aplicaTema(); return render(); }
   if (t.dataset.fs) { S.cfg.fs = t.dataset.fs; save(); aplicaTema(); return render(); }
   if (t.dataset.exp) { exporta(t.dataset.exp); return; }
@@ -843,7 +863,10 @@ if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
 }
 
 aplicaTema();
-if (!S.cfg.noGa) document.getElementById('ga-slot').innerHTML = gaHTML();
+if (!S.cfg.noGa) {
+  document.getElementById('ga-slot').innerHTML = splashHTML();
+  setTimeout(cierraSplash, 2600);
+}
 addEventListener("scroll", () => {
   const el = document.querySelector(".top");
   if (el) el.classList.toggle("stuck", scrollY > 6);
