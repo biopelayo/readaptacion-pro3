@@ -207,7 +207,7 @@ document.getElementById("fr").onload = function () {
   });
 
   /* ── catálogo ───────────────────────────────────────────── */
-  t("hay 35 fichas de ejercicio", () => eq(Object.keys(T.D.ej).length, 35));
+  t("hay 91 fichas de ejercicio", () => eq(Object.keys(T.D.ej).length, 91));
   t("todas las fichas tienen pasos y error", () => {
     for (const k in T.D.ej) {
       const e = T.D.ej[k];
@@ -275,9 +275,11 @@ document.getElementById("fr").onload = function () {
     const m = s.match(/https?:\/\/(?!www\.w3\.org)[a-z0-9.-]+/gi);
     return m ? "referencias externas: " + [...new Set(m)].join(", ") : true;
   });
-  t("la app cabe holgada en el almacenamiento del móvil", () => {
+  t("la app pesa menos de 6 MB", () => {
+    /* 91 fotos embebidas para que funcione sin cobertura: 6 MB es el techo
+       razonable de una app instalable, y una sola foto de móvil pesa 4 */
     const kb = Math.round(w.document.documentElement.innerHTML.length / 1024);
-    return kb < 4096 ? true : "pesa " + kb + " KB";
+    return kb < 6144 ? true : "pesa " + kb + " KB";
   });
 
   /* deja la app con datos de ejemplo para poder mirarla debajo */
@@ -356,6 +358,49 @@ document.getElementById("fr").onload = function () {
       }
     });
     return sin.length ? "sin aductor: " + sin.join(", ") : true;
+  });
+
+  /* ── catálogo ampliado y fotos visibles ─────────────────── */
+  t("ningún ejercicio del plan se queda sin ficha", () => {
+    const sin = new Set();
+    Object.keys(T.D.micro).forEach(bid => {
+      Object.keys(T.D.micro[bid]).forEach(d => {
+        T.D.micro[bid][d].secciones.forEach(s => {
+          if (s.tipo !== "tabla") return;
+          s.items.forEach(it => { if (!it[0]) sin.add(it[1]); });
+        });
+      });
+    });
+    return sin.size ? sin.size + " sin ficha, p.ej. " + [...sin][0] : true;
+  });
+  t("toda ficha del catálogo se muestra en algún día", () => {
+    const vistas = new Set();
+    const mete = ses => ses.secciones.forEach(s => {
+      (s.fotos || []).forEach(f => vistas.add(f));
+      if (s.tipo === "tabla") s.items.forEach(it => { if (it[0]) vistas.add(it[0]); });
+    });
+    Object.keys(T.D.micro).forEach(bid =>
+      Object.keys(T.D.micro[bid]).forEach(d => mete(T.D.micro[bid][d])));
+    if (T.D.apertura) mete(T.D.apertura);
+    vistas.add("plato-modelo"); vistas.add("post-entreno");   /* van en nutrición */
+    const huerfanas = Object.keys(T.D.ej).filter(k => !vistas.has(k));
+    return huerfanas.length ? "no se ven nunca: " + huerfanas.join(", ") : true;
+  });
+  t("las secciones de texto llevan su tira de fotos", () => {
+    let con = 0;
+    Object.keys(T.D.micro).forEach(bid =>
+      Object.keys(T.D.micro[bid]).forEach(d =>
+        T.D.micro[bid][d].secciones.forEach(s => {
+          if ((s.fotos || []).length) con++;
+        })));
+    return con >= 25 ? true : "solo " + con + " secciones con fotos";
+  });
+  t("las fichas nuevas traen aviso donde toca", () => {
+    const criticos = ["copenhagen-corto", "copenhagen-largo", "aductor-excentrico",
+                      "prensa-pies-altos", "step-up-alto", "trote-progresivo",
+                      "progresivos-40m"];
+    const sin = criticos.filter(k => !T.D.ej[k] || !T.D.ej[k].aviso);
+    return sin.length ? "sin aviso: " + sin.join(", ") : true;
   });
 
   const res = document.getElementById("res");

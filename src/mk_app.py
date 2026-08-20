@@ -27,7 +27,7 @@ def jpg(slug, ancho, q):
 slugs = sorted({s for s in EJ})
 IMGS = {}
 for s in slugs:
-    med = jpg(s, 620, 74)
+    med = jpg(s, 520, 70)
     if med:
         IMGS[s] = med
 print("imagenes embebidas:", len(IMGS))
@@ -57,6 +57,7 @@ HTML = """<!DOCTYPE html>
 <body>
 <div class="wrap" id="app"></div>
 <div id="tm"></div>
+<div id="ga-slot"></div>
 <nav class="nav">
   <button data-v="hoy" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Hoy</button>
   <button data-v="semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>Semana</button>
@@ -224,6 +225,119 @@ function escala(f, campo, val, cls) {
   return h + "</div>";
 }
 
+/* minutos del dia: se leen de los meta de cada seccion ("20 min", "45 min") */
+function minutosDe(secs) {
+  let m = 0;
+  (secs || []).forEach(s => {
+    const x = (s.meta || "").match(/(\d+)\s*(?:a|-|\u2013)?\s*(\d+)?\s*min/);
+    if (x) m += x[2] ? Math.round((+x[1] + +x[2]) / 2) : +x[1];
+  });
+  return m;
+}
+
+/* ── graphical abstract: por que existe esto y como funciona ─ */
+function gaSVG() {
+  const B = D.bloques;
+  const W = 680, H = 190, x0 = 24, x1 = W - 24, ancho = (x1 - x0) / B.length;
+  let barras = "", etiquetas = "";
+  B.forEach((b, i) => {
+    const x = x0 + i * ancho;
+    const alto = 26 + i * 13;
+    barras += '<rect x="' + (x + 3) + '" y="' + (128 - alto) + '" width="' + (ancho - 6) +
+      '" height="' + alto + '" rx="7" fill="currentColor" opacity="' + (0.20 + i * 0.16) + '"/>';
+    etiquetas += '<text x="' + (x + ancho / 2) + '" y="146" text-anchor="middle" ' +
+      'font-size="12.5" font-weight="600" fill="currentColor">' + b.id + '</text>' +
+      '<text x="' + (x + ancho / 2) + '" y="163" text-anchor="middle" font-size="10.5" ' +
+      'fill="currentColor" opacity=".55">' + esc(b.nombre.split(":")[0].split(" y ")[0]) + '</text>';
+  });
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Los cinco bloques">' +
+    '<line x1="' + x0 + '" y1="128.5" x2="' + x1 + '" y2="128.5" stroke="currentColor" ' +
+    'stroke-opacity=".22"/>' + barras + etiquetas +
+    '<text x="' + x0 + '" y="22" font-size="11" font-weight="700" fill="currentColor" ' +
+    'opacity=".5" letter-spacing="1.2">CARGA</text>' +
+    '<text x="' + x1 + '" y="22" text-anchor="end" font-size="11" fill="currentColor" ' +
+    'opacity=".5">20 ago → 28 oct</text></svg>';
+}
+
+function gaHTML() {
+  const nEj = Object.keys(D.ej).length;
+  return '<div class="ga" id="ga"><div class="ga-in">' +
+    '<div class="ga-k">Readaptación · pubalgia sin hernia</div>' +
+    '<h2>Se avanza por función, <em>no por calendario</em></h2>' +
+    '<p class="lede">El dolor no se apagó con diez días de reposo. Eso no es fatiga: es que el ' +
+    'tejido no tolera la carga. Se arregla cargando poco, a menudo y midiendo, no descansando más.</p>' +
+    gaSVG() +
+    '<div class="ga-cifras">' +
+    '<div class="ga-c"><b>70</b><span>días de plan</span></div>' +
+    '<div class="ga-c"><b>5</b><span>bloques con puerta</span></div>' +
+    '<div class="ga-c"><b>' + nEj + '</b><span>ejercicios con ficha</span></div>' +
+    '<div class="ga-c"><b>1</b><span>número cada mañana</span></div></div>' +
+    '<div class="ga-pasos">' +
+    '<div class="ga-p"><i>1</i><div><b>Anotas el dolor al despertar</b>' +
+    '<span>Antes de levantarte. Es el único dato que no puede inventar nadie.</span></div></div>' +
+    '<div class="ga-p"><i>2</i><div><b>La app compone la sesión</b>' +
+    '<span>Con 0-2 va entera. Con 3 caen gimnasio y campo. Con 4 se suspende y llamas al fisio.</span></div></div>' +
+    '<div class="ga-p"><i>3</i><div><b>Marcas y registras lo que haces</b>' +
+    '<span>Cargas, tareas y dolor. Sin registro, un bloque no puede darse por superado.</span></div></div>' +
+    '<div class="ga-p"><i>4</i><div><b>El día siguiente es el juez</b>' +
+    '<span>Si una puerta no se abre, el bloque se prolonga y el resto se recoloca solo.</span></div></div>' +
+    '</div>' +
+    '<div class="ga-cierre">El orden no es negociable: primero apagar la irritación, luego fuerza, ' +
+    'luego velocidad y, al final del todo, <b>el balón parado</b>. Las faltas son lo tuyo y a la vez ' +
+    'el gesto que más carga el pubis, por eso son lo último y van con techo de golpeos.</div>' +
+    '<div class="ga-btn"><button class="btn" data-ga="cerrar">Ver el día de hoy</button>' +
+    '<label class="ga-mini"><input type="checkbox" data-ga="nomas"' +
+    (S.cfg.noGa ? " checked" : "") + '> No mostrarlo al abrir</label></div>' +
+    '</div></div>';
+}
+
+/* ── resumen del dia en un vistazo ──────────────────────────── */
+function resumenHTML(s, pr, mins) {
+  const i = s.info;
+  const secs = s.secs;
+  const clave = [];
+  secs.forEach(x => {
+    if (x.tipo !== "tabla") return;
+    x.items.forEach(it => { if (it[3] && clave.length < 2) clave.push([it[3], it[1], it[2]]); });
+  });
+  const campo = secs.find(x => /campo|fútbol|partido/i.test(x.titulo));
+  const gym = secs.find(x => /gimnasio/i.test(x.titulo));
+  const agua = secs.find(x => /piscina/i.test(x.titulo));
+  const fisio = secs.find(x => /fisio/i.test(x.titulo));
+  let li = "";
+  const fila = (et, txt) => '<div class="sum-i"><em>' + et + '</em><div>' + txt + '</div></div>';
+  li += fila("Hoy", '<b>' + esc(s.base.titulo) + '</b>');
+  clave.forEach(c => li += fila(c[0], '<b>' + esc(c[1]) + '</b> · ' + esc(c[2])));
+  if (gym) li += fila("Gimnasio", esc(gym.titulo.replace(/^Gimnasio · /, "")) +
+                      (gym.meta ? " · " + esc(gym.meta) : ""));
+  if (campo) li += fila("Campo", esc(campo.titulo.replace(/^Campo · /, "")));
+  if (agua) li += fila("Agua", esc(agua.meta || "sesión de piscina"));
+  if (fisio) li += fila("Fisio", esc(fisio.meta || "sesión"));
+  if (i.b.fuera && i.b.fuera.length)
+    li += fila("Fuera", i.b.fuera.slice(0, 4).join(" · ").toLowerCase() +
+               (i.b.fuera.length > 4 ? " y " + (i.b.fuera.length - 4) + " más" : ""));
+  return '<div class="sum"><div class="sum-t"><b>El día en un vistazo</b>' +
+    '<span>' + i.b.id + ' · día ' + i.n + '/' + i.dur + '</span></div>' +
+    '<div class="sum-g">' +
+    '<div class="sum-c"><b>' + pr.total + '</b><span>tareas</span></div>' +
+    '<div class="sum-c"><b>' + (mins >= 60 ? (mins / 60).toFixed(1).replace(".0", "") + " h" : mins + " min") +
+    '</b><span>estimado</span></div>' +
+    '<div class="sum-c"><b>' + s.pct + ' %</b><span>isométrico</span></div></div>' +
+    '<div class="sum-l">' + li + '</div></div>';
+}
+
+/* tira de miniaturas de una seccion de texto: piscina, aparatos, fisio, comida.
+   Tocarlas abre su ficha en el manual. */
+function tira(slugs) {
+  const con = (slugs || []).filter(s => D.img[s]);
+  if (!con.length) return "";
+  return '<div class="tira">' + con.map(s =>
+    '<figure data-ficha="' + s + '"><img src="' + D.img[s] + '" alt="' +
+    esc(D.ej[s] ? D.ej[s].nombre : "") + '" loading="lazy">' +
+    '<figcaption>' + esc(D.ej[s] ? D.ej[s].nombre : "") + '</figcaption></figure>'
+  ).join("") + '</div>';
+}
+
 /* ── vista HOY ────────────────────────────────────────────── */
 function vistaHoy() {
   const s = sesionDe(FECHA);
@@ -248,10 +362,14 @@ function vistaHoy() {
 
   h += '<div class="rule">' + esc(s.base.regla) + '</div>';
 
-  /* tracker del dia */
+  /* resumen y tracker del dia */
   const pr = progresoDe(FECHA);
+  h += resumenHTML(s, pr, minutosDe(s.secs));
+  const mins = minutosDe(s.secs);
   h += '<div class="prog"><div class="pt"><div><span class="pn">' + pr.hechas + '</span>' +
-       '<span class="pl"> de ' + pr.total + ' tareas</span></div>' +
+       '<span class="pl"> de ' + pr.total + ' tareas' +
+       (mins ? ' · unos ' + (mins >= 90 ? Math.floor(mins / 60) + ' h ' + (mins % 60 ? (mins % 60) + ' min' : '') : mins + ' min') : '') +
+       '</span></div>' +
        '<div class="pl">' + pr.pct + ' %</div></div>' +
        '<div class="pbar' + (pr.pct >= 100 ? ' full' : '') + '"><i style="width:' +
        pr.pct + '%"></i></div></div>';
@@ -314,8 +432,10 @@ function vistaHoy() {
              (on ? '✓' : '') + '</button></div>';
       });
     } else if (sec.tipo === "lista") {
-      h += '<ul class="bul">' + sec.items.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>';
+      h += tira(sec.fotos) +
+           '<ul class="bul">' + sec.items.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>';
     } else if (sec.tipo === "pasos") {
+      h += tira(sec.fotos);
       h += '<ol class="steps">' + sec.items.map(x =>
            '<li><strong>' + esc(x[0]) + '.</strong> ' + esc(x[1]) + '</li>').join("") + '</ol>';
     } else if (sec.tipo === "test") {
@@ -331,6 +451,7 @@ function vistaHoy() {
   const nut = D.nutricion[wd(FECHA)];
   h += '<div class="card"><div class="ch"><span class="cn">08</span>' +
        '<h2 class="ct">Comidas del día</h2><span class="cm">137 g proteína</span></div>';
+  h += tira(["plato-modelo", "post-entreno"]);
   nut.forEach((c, k) => {
     h += '<div class="ex" style="grid-template-columns:1fr auto"><div>' +
          '<div class="exk">' + esc(D.momentos[k]) + '</div>' +
@@ -480,6 +601,7 @@ function vistaDatos() {
        [["auto", "Automático"], ["light", "Claro"], ["dark", "Oscuro"]].map(o =>
          '<button class="btn ' + (tm === o[0] ? '' : 'ghost') + '" data-tema="' + o[0] + '">' +
          o[1] + '</button>').join("") + '</div>' +
+       '<button class="btn ghost wide" data-abstract="1">Ver de nuevo la presentación</button>' +
        '<div class="note">En automático sigue al sistema: claro de día y oscuro de noche.</div>' +
        '<div class="lab">Tamaño del texto</div><div class="row">' +
        [["n", "Normal"], ["g", "Grande"], ["xg", "Enorme"]].map(o =>
@@ -525,7 +647,7 @@ function render() {
 }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("button, .ex, .wd");
+  const t = e.target.closest("button, .ex, .wd, figure[data-ficha]");
   if (!t) return;
   if (t.dataset.v) { VISTA = t.dataset.v; return render(); }
   if (t.dataset.nav) { FECHA = suma(FECHA, +t.dataset.nav); return render(); }
@@ -560,6 +682,8 @@ document.addEventListener("click", e => {
     if (t.dataset.tm === "salta") { T.seg = 1; return tick(); }
     return cierraTimer(false);
   }
+  if (t.dataset.ga === "cerrar") { document.getElementById("ga-slot").innerHTML = ""; return; }
+  if (t.dataset.abstract) { document.getElementById("ga-slot").innerHTML = gaHTML(); return; }
   if (t.dataset.tema) { S.cfg.tema = t.dataset.tema; save(); aplicaTema(); return render(); }
   if (t.dataset.fs) { S.cfg.fs = t.dataset.fs; save(); aplicaTema(); return render(); }
   if (t.dataset.exp) { exporta(t.dataset.exp); return; }
@@ -572,6 +696,7 @@ document.addEventListener("input", e => {
   const d = e.target.dataset;
   if (!d) return;
   if (d.txt) setReg(FECHA, d.txt, e.target.value);
+  if (d.ga === "nomas") { S.cfg.noGa = e.target.checked; save(); return; }
   if (d.kg) {                                   /* carga usada, sin repintar */
     const r = S.reg[FECHA] = S.reg[FECHA] || {};
     r.cargas = r.cargas || {};
@@ -680,6 +805,7 @@ if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
 }
 
 aplicaTema();
+if (!S.cfg.noGa) document.getElementById('ga-slot').innerHTML = gaHTML();
 addEventListener("scroll", () => {
   const el = document.querySelector(".top");
   if (el) el.classList.toggle("stuck", scrollY > 6);
