@@ -168,6 +168,30 @@ h1 .g{color:var(--ink-3);font-weight:400}
 @media (max-width:24rem){.tira{grid-auto-flow:row;grid-template-columns:1fr 1fr;
   grid-auto-columns:auto}}
 
+/* ── gestos en movimiento: dos fotogramas alternados ──────── */
+.mov{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:.5rem;margin:.2rem 0 1rem}
+.mov figure{margin:0;min-width:0}
+.mov .fr{position:relative;aspect-ratio:4/3;border-radius:var(--r-m);overflow:hidden;
+  border:1px solid var(--line);background:var(--surface-2);cursor:pointer}
+.mov .fr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mov .fr img.b{opacity:0;animation:frame 2.4s steps(1,end) infinite}
+.mov .fr img.a{animation:frameA 2.4s steps(1,end) infinite}
+@keyframes frame{0%,50%{opacity:0}50.01%,100%{opacity:1}}
+@keyframes frameA{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+.mov .fr::after{content:"";position:absolute;left:.4rem;bottom:.4rem;width:.4rem;height:.4rem;
+  border-radius:999px;background:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.35);
+  animation:puls 2.4s ease-in-out infinite}
+@keyframes puls{0%,49%{transform:scale(1);opacity:.9}50%,100%{transform:scale(1.9);opacity:.35}}
+.mov figcaption{font-size:.7rem;color:var(--ink-3);margin-top:.3rem;line-height:1.2;
+  text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical}
+@media (max-width:26rem){.mov{grid-auto-flow:row;grid-template-columns:1fr 1fr;
+  grid-auto-columns:auto}}
+@media (prefers-reduced-motion:reduce){
+  .mov .fr img.b,.mov .fr img.a,.mov .fr::after{animation:none}
+  .mov .fr img.b{opacity:0}
+}
+
 /* ── listas ───────────────────────────────────────────────── */
 ul.bul{list-style:none;margin:0;padding:0}
 ul.bul li{position:relative;padding:.55rem 0 .55rem 1.15rem;font-size:.98rem;line-height:1.45;

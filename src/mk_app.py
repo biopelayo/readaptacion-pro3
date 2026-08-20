@@ -6,7 +6,11 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ, APERTURA  # noqa: E402
+from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ, APERTURA
+import glob as _glob
+EXTRA_FRAMES = [os.path.basename(f)[:-4] for f in
+                _glob.glob(os.path.join(os.path.dirname(os.path.dirname(
+                    os.path.abspath(__file__))), 'imagenes', 'web', '*--b.jpg'))]  # noqa: E402
 
 IMG = os.path.join(os.path.dirname(HERE), "imagenes", "web")
 DST = os.path.join(os.path.dirname(HERE), "app", "index.html")
@@ -24,7 +28,7 @@ def jpg(slug, ancho, q):
 
 
 # imagenes: miniatura para la lista, media para la ficha
-slugs = sorted({s for s in EJ})
+slugs = sorted({s for s in EJ}) + sorted(EXTRA_FRAMES)
 IMGS = {}
 for s in slugs:
     med = jpg(s, 520, 70)
@@ -225,6 +229,30 @@ function escala(f, campo, val, cls) {
   return h + "</div>";
 }
 
+/* tira de gestos en movimiento: usa el segundo fotograma cuando existe */
+function movimiento(secs) {
+  const vistos = [], clave = [];
+  (secs || []).forEach(s => {
+    if (s.tipo !== "tabla") return;
+    s.items.forEach(it => {
+      if (!it[0] || vistos.indexOf(it[0]) >= 0) return;
+      if (!D.img[it[0] + "--b"]) return;          /* solo los que tienen 2 fotogramas */
+      vistos.push(it[0]);
+      clave.push([it[0], it[3] ? 0 : 1]);          /* los marcados, primero */
+    });
+  });
+  if (!clave.length) return "";
+  clave.sort((a, b) => a[1] - b[1]);
+  const tres = clave.slice(0, 3);
+  return '<div class="mov">' + tres.map(c => {
+    const s = c[0];
+    return '<figure data-ficha="' + s + '"><div class="fr">' +
+      '<img class="a" src="' + D.img[s] + '" alt="' + esc(D.ej[s].nombre) + '">' +
+      '<img class="b" src="' + D.img[s + "--b"] + '" alt="">' +
+      '</div><figcaption>' + esc(D.ej[s].nombre) + '</figcaption></figure>';
+  }).join("") + '</div>';
+}
+
 /* minutos del dia: se leen de los meta de cada seccion ("20 min", "45 min") */
 function minutosDe(secs) {
   let m = 0;
@@ -264,8 +292,8 @@ function gaHTML() {
   return '<div class="ga" id="ga"><div class="ga-in">' +
     '<div class="ga-k">Readaptación · pubalgia sin hernia</div>' +
     '<h2>Se avanza por función, <em>no por calendario</em></h2>' +
-    '<p class="lede">El dolor no se apagó con diez días de reposo. Eso no es fatiga: es que el ' +
-    'tejido no tolera la carga. Se arregla cargando poco, a menudo y midiendo, no descansando más.</p>' +
+    '<p class="lede">Diez días de reposo no apagaron el dolor. Cuando eso pasa, el problema está ' +
+    'en cuánta carga aguanta el tejido, y esa se recupera cargando poco, a menudo y midiendo.</p>' +
     gaSVG() +
     '<div class="ga-cifras">' +
     '<div class="ga-c"><b>70</b><span>días de plan</span></div>' +
@@ -282,9 +310,9 @@ function gaHTML() {
     '<div class="ga-p"><i>4</i><div><b>El día siguiente es el juez</b>' +
     '<span>Si una puerta no se abre, el bloque se prolonga y el resto se recoloca solo.</span></div></div>' +
     '</div>' +
-    '<div class="ga-cierre">El orden no es negociable: primero apagar la irritación, luego fuerza, ' +
-    'luego velocidad y, al final del todo, <b>el balón parado</b>. Las faltas son lo tuyo y a la vez ' +
-    'el gesto que más carga el pubis, por eso son lo último y van con techo de golpeos.</div>' +
+    '<div class="ga-cierre">El orden importa tanto como el contenido: primero apagar la irritación, ' +
+    'después fuerza, luego velocidad y al final <b>el balón parado</b>. Las faltas son lo tuyo y ' +
+    'también lo que más castiga el pubis, así que llegan las últimas y con los golpeos contados.</div>' +
     '<div class="ga-btn"><button class="btn" data-ga="cerrar">Ver el día de hoy</button>' +
     '<label class="ga-mini"><input type="checkbox" data-ga="nomas"' +
     (S.cfg.noGa ? " checked" : "") + '> No mostrarlo al abrir</label></div>' +
@@ -323,6 +351,7 @@ function resumenHTML(s, pr, mins) {
     '<div class="sum-c"><b>' + (mins >= 60 ? (mins / 60).toFixed(1).replace(".0", "") + " h" : mins + " min") +
     '</b><span>estimado</span></div>' +
     '<div class="sum-c"><b>' + s.pct + ' %</b><span>isométrico</span></div></div>' +
+    movimiento(secs) +
     '<div class="sum-l">' + li + '</div></div>';
 }
 

@@ -18,10 +18,13 @@ from fichas_app import EJ              # noqa: E402
 html = io.open(os.path.join(RAIZ, "app", "index.html"), encoding="utf-8").read()
 
 # 1. origen
-web = {os.path.basename(p)[:-4] for p in glob.glob(os.path.join(RAIZ, "imagenes", "web", "*.jpg"))}
+# los "--b" son el segundo fotograma de un gesto, no fichas del catalogo
+web = {os.path.basename(p)[:-4] for p in glob.glob(os.path.join(RAIZ, "imagenes", "web", "*.jpg"))
+       if not p.endswith("--b.jpg")}
 
 # 2. embebidas: se saca el diccionario img del JSON del propio html
-emb = set(re.findall(r'"([a-z0-9-]+)"\s*:\s*"data:image/jpeg;base64,', html))
+emb = {k for k in re.findall(r'"([a-z0-9-]+)"\s*:\s*"data:image/jpeg;base64,', html)
+       if not k.endswith("--b")}
 
 # 3. pintadas por algun dia
 pintadas = set()
