@@ -321,6 +321,11 @@ function leeDosis(txt) {
   if (m) return {modo: "reps", series: +m[1], reps: +m[2], trabajo: 0, descanso: 75};
   m = s.match(/^(\d+)\s*s(?![a-z])/);
   if (m) return {modo: "duracion", series: 1, trabajo: +m[1], descanso: 0};
+  /* una serie suelta de N repeticiones: "12 golpeos al 70 %", "6 remates",
+     "8-10", "10 ciclos". Cronometrarlas importa sobre todo por los golpeos,
+     que son la dosis de riesgo de esta lesion y conviene tener contada. */
+  m = s.match(/^(\d+)(?:\s*[-–]\s*\d+)?/);
+  if (m) return {modo: "reps", series: 1, reps: +m[1], trabajo: 0, descanso: 60};
   return null;
 }
 

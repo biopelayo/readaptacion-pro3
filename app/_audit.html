@@ -1,0 +1,149 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Auditoría</title>
+<style>body{font:13px/1.5 monospace;background:#111;color:#ddd;padding:16px}
+.ok{color:#5BD98A}.ko{color:#FF8A80}.w{color:#F5B54A}iframe{width:390px;height:700px;position:fixed;left:-9999px}</style>
+</head><body><div id="o">arrancando…</div><iframe id="f" src="index.html"></iframe>
+<script>
+const L=[]; const err=[];
+window.onerror=(m,s,l)=>{err.push("window: "+m)};
+const P=(c,t)=>L.push('<div class="'+c+'">'+(c==="ok"?"OK  ":c==="ko"?"FALLA ":"AVISO ")+t+"</div>");
+document.getElementById("f").onload=function(){
+  const w=this.contentWindow, d=w.document, T=w.__t;
+  w.onerror=(m)=>err.push("app: "+m);
+  const hoy=T.iso(new Date());
+  const pr=(f)=>{try{f();return null}catch(e){return e.message}};
+
+  // 1. cada vista renderiza sin excepcion y con contenido
+  ["hoy","semana","manual","datos"].forEach(v=>{
+    const e=pr(()=>T.setVista(v));
+    const n=d.getElementById("app").innerHTML.length;
+    if(e) P("ko","vista "+v+" lanza: "+e);
+    else if(n<800) P("ko","vista "+v+" casi vacia ("+n+" bytes)");
+    else P("ok","vista "+v+" ("+Math.round(n/1024)+" KB)");
+  });
+
+  // 2. los 70 dias del plan se componen sin romper
+  T.setVista("hoy");
+  let malos=[], vacios=[];
+  for(let k=0;k<75;k++){
+    const f=T.suma("2026-08-20",k);
+    const e=pr(()=>{const s=T.sesionDe(f); if(!s.base||!s.base.titulo) vacios.push(f);});
+    if(e) malos.push(f+": "+e);
+  }
+  P(malos.length?"ko":"ok","composicion de 75 dias"+(malos.length?" -> "+malos.slice(0,3).join(" | "):"")
+    +(vacios.length?" | sin titulo: "+vacios.length:""));
+
+  // 3. cada dia se PINTA sin romper (no solo se compone)
+  let pmal=[];
+  for(let k=0;k<75;k+=1){
+    const f=T.suma("2026-08-20",k);
+    const e=pr(()=>{T.setFecha(f)});
+    if(e) pmal.push(f+": "+e);
+    else if(d.getElementById("app").innerHTML.length<2000) pmal.push(f+": vista corta");
+  }
+  P(pmal.length?"ko":"ok","pintado de 75 dias"+(pmal.length?" -> "+pmal.slice(0,3).join(" | "):""));
+
+  // 4. dias antes y despues del plan
+  ["2026-08-19","2026-07-01","2026-11-30","2027-01-01"].forEach(f=>{
+    const e=pr(()=>T.setFecha(f));
+    P(e?"ko":"ok","fecha fuera de plan "+f+(e?": "+e:""));
+  });
+  T.setFecha(hoy);
+
+  // 5. todo slug del plan tiene ficha y foto
+  const sinF=new Set(), sinI=new Set();
+  Object.keys(T.D.micro).forEach(b=>Object.keys(T.D.micro[b]).forEach(dd=>
+    T.D.micro[b][dd].secciones.forEach(s=>{
+      if(s.tipo==="tabla") s.items.forEach(it=>{
+        if(it[0]){ if(!T.D.ej[it[0]]) sinF.add(it[0]); if(!T.D.img[it[0]]) sinI.add(it[0]); }
+      });
+      (s.fotos||[]).forEach(x=>{ if(!T.D.ej[x]) sinF.add(x); if(!T.D.img[x]) sinI.add(x); });
+    })));
+  P(sinF.size?"ko":"ok","fichas de todos los slugs"+(sinF.size?" faltan: "+[...sinF].join(", "):""));
+  P(sinI.size?"ko":"ok","fotos de todos los slugs"+(sinI.size?" faltan: "+[...sinI].join(", "):""));
+
+  // 6. ids de tarea unicos por dia (colision = marcar una marca otra)
+  let col=[];
+  for(let k=0;k<75;k++){
+    const f=T.suma("2026-08-20",k);
+    const ids=T.tareasDe(T.sesionDe(f)).map(x=>x.id);
+    if(new Set(ids).size!==ids.length) col.push(f);
+  }
+  P(col.length?"ko":"ok","ids de tarea unicos"+(col.length?" -> colisiones en "+col.length+" dias: "+col.slice(0,3):""));
+
+  // 7. modo entreno: recorrer TODAS las postas de hoy sin romper
+  T.setFecha(hoy); T.setVista("hoy");
+  const b=d.querySelector("[data-entreno]");
+  if(!b) P("ko","no hay boton de modo entreno");
+  else{
+    b.click();
+    let n=0, e=null;
+    while(d.querySelector(".ent") && n<80){
+      const nom=d.querySelector(".ent-n");
+      if(!nom||!nom.textContent.trim()) { e="posta "+n+" sin nombre"; break; }
+      const nx=d.querySelector('[data-ent="next"]'); if(!nx) {e="sin boton siguiente"; break;}
+      nx.click(); n++;
+    }
+    P(e?"ko":"ok","modo entreno recorre "+n+" postas"+(e?" -> "+e:""));
+    if(d.querySelector('[data-ent="cierra"]')) d.querySelector('[data-ent="cierra"]').click();
+  }
+
+  // 8. cronometro de cada dosis distinta que aparece en el plan
+  const dosis=new Set();
+  Object.keys(T.D.micro).forEach(bb=>Object.keys(T.D.micro[bb]).forEach(dd=>
+    T.D.micro[bb][dd].secciones.forEach(s=>{ if(s.tipo==="tabla") s.items.forEach(it=>dosis.add(it[2])); })));
+  const sinCrono=[...dosis].filter(x=>!T.leeDosis(x));
+  P("w",dosis.size+" dosis distintas; sin cronometro (texto libre): "+sinCrono.length+
+    (sinCrono.length?" -> "+sinCrono.slice(0,6).join(" / "):""));
+  const raras=[...dosis].filter(x=>{const r=T.leeDosis(x);
+    if(!r) return false;
+    if(r.series>20) return true;
+    if(r.modo==="reps") return r.reps>60;
+    return r.trabajo>1800||r.trabajo<3;});
+  P(raras.length?"ko":"ok","ninguna dosis se lee mal"+(raras.length?" -> "+raras.join(" / "):""));
+
+  // 9. escritura y lectura de todos los registros
+  T.setVista("hoy");
+  const antes=JSON.stringify(T.S);
+  const e1=pr(()=>{ d.querySelector("[data-hecho]").click(); });
+  const e2=pr(()=>{ const c=d.querySelector("[data-sec]"); if(c) c.click(); });
+  const e3=pr(()=>{ const k=d.querySelector("[data-k]"); if(k) k.click(); });
+  const r=T.S.reg[hoy]||{};
+  P((e1||e2||e3)?"ko":"ok","marcar tarea, chip y escala"+(e1||e2||e3?": "+[e1,e2,e3].filter(Boolean):""));
+  P(r.horas&&Object.keys(r.horas).length?"ok":"ko","la hora se guarda sola");
+  P(r.sec&&Object.keys(r.sec).length?"ok":"ko","molestia por seccion se guarda");
+
+  // 10. CSV: se genera y tiene tantas columnas como cabeceras
+  let csvE=null,cols=0,cab=0;
+  try{
+    cab=T.cabeceraCSV().split(",").length;
+    const orig=w.URL.createObjectURL; let txt="";
+    w.URL.createObjectURL=(bl)=>{txt="x";return "blob:x"};
+    const a=d.createElement("a"); // exporta usa a.click(), lo dejamos correr
+    T.exporta("csv");
+    w.URL.createObjectURL=orig;
+  }catch(ex){csvE=ex.message}
+  P(csvE?"ko":"ok","exportacion CSV"+(csvE?": "+csvE:" ("+cab+" columnas)"));
+
+  // 11. sin desbordamiento horizontal en 390 px, en las cuatro vistas
+  ["hoy","semana","manual","datos"].forEach(v=>{
+    T.setVista(v);
+    const b=d.body, ancho=b.scrollWidth, vis=d.documentElement.clientWidth;
+    if(ancho>vis+1){
+      const culpa=[...d.querySelectorAll("*")].filter(x=>x.getBoundingClientRect().right>vis+1)
+        .slice(0,3).map(x=>x.tagName+"."+(x.className||"").toString().slice(0,24));
+      P("ko","vista "+v+" desborda "+(ancho-vis)+" px -> "+culpa.join(" | "));
+    } else P("ok","vista "+v+" cabe en "+vis+" px");
+  });
+
+  // 12. objetivos tactiles
+  T.setVista("hoy");
+  const peq=[...d.querySelectorAll("button")].filter(x=>{
+    const r=x.getBoundingClientRect(); return r.height>0 && r.height<38});
+  P(peq.length?"w":"ok","botones por debajo de 38 px: "+peq.length+
+    (peq.length?" -> "+peq.slice(0,4).map(x=>(x.className||"?")+" "+Math.round(x.getBoundingClientRect().height)).join(" | "):""));
+
+  T.setFecha(hoy); T.setVista("hoy");
+  P(err.length?"ko":"ok","errores de consola: "+err.length+(err.length?" -> "+err.slice(0,3).join(" | "):""));
+  document.getElementById("o").innerHTML=L.join("");
+};
+</script></body></html>

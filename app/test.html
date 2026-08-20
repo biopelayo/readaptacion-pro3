@@ -599,6 +599,56 @@ document.getElementById("fr").onload = function () {
     return g === T.iso(new Date()) ? true : "la marca guarda " + g;
   });
 
+  t("toda dosis escrita en el plan se puede cronometrar", () => {
+    const d = new Set();
+    Object.keys(T.D.micro).forEach(b => Object.keys(T.D.micro[b]).forEach(k =>
+      T.D.micro[b][k].secciones.forEach(s => {
+        if (s.tipo === "tabla") s.items.forEach(it => d.add(it[2]));
+      })));
+    const sin = [...d].filter(x => !T.leeDosis(x));
+    return sin.length ? "sin cronometro: " + sin.slice(0, 5).join(" / ") : true;
+  });
+
+  t("leeDosis cuenta los golpeos sueltos", () => {
+    const f = T.leeDosis;
+    const a = f("12 golpeos al 70 %");
+    if (!a || a.modo !== "reps" || a.reps !== 12) return "no lee los golpeos";
+    const b = f("6-8 al 70-80 %");
+    if (!b || b.reps !== 6) return "no lee el rango";
+    return true;
+  });
+
+  t("el paquete no lleva caracteres de control", () => {
+    /* Python convierte \b en un retroceso al construir el HTML y eso rompio
+       dos veces un regex del cronometro sin dar error visible */
+    const s = w.document.documentElement.innerHTML;
+    const malos = [8, 11, 12, 27, 0].filter(c => s.indexOf(String.fromCharCode(c)) >= 0);
+    return malos.length ? "codigos de control presentes: " + malos.join(", ") : true;
+  });
+
+  t("ninguna vista desborda a lo ancho en el movil", () => {
+    const mal = [];
+    ["hoy", "semana", "manual", "datos"].forEach(v => {
+      T.setVista(v);
+      const ancho = w.document.body.scrollWidth;
+      const vis = w.document.documentElement.clientWidth;
+      if (ancho > vis + 1) mal.push(v + " +" + (ancho - vis) + "px");
+    });
+    T.setVista("hoy");
+    return mal.length ? mal.join(", ") : true;
+  });
+
+  t("los botones llegan al minimo tactil", () => {
+    T.setVista("hoy");
+    const peq = [...w.document.querySelectorAll("button")].filter(x => {
+      const r = x.getBoundingClientRect();
+      return r.height > 0 && r.height < 38;
+    });
+    return peq.length ? peq.length + " botones de menos de 38 px: " +
+      peq.slice(0, 3).map(x => x.className + " " + Math.round(x.getBoundingClientRect().height)).join(", ")
+      : true;
+  });
+
   const res = document.getElementById("res");
   res.className = ko === 0 ? "good" : "bad";
   res.textContent = ko === 0

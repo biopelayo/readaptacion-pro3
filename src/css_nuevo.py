@@ -149,12 +149,13 @@ body.sin-scroll{overflow:hidden}
 /* -- recogida de datos por seccion ------------------------- */
 .pie{border-top:1px solid var(--line);margin-top:.9rem;padding-top:.8rem;
   display:flex;flex-direction:column;gap:.5rem}
-.pie-r{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-.pie-r > span{font-size:.8rem;color:var(--ink-3);min-width:4.6rem}
-.chips{display:flex;gap:.35rem;flex:1;flex-wrap:wrap}
-.chip{flex:1;min-width:3.4rem;min-height:2.3rem;font-size:.8rem;font-weight:500;
+.pie-r{display:flex;flex-direction:column;gap:.35rem}
+.pie-r > span{font-size:.78rem;color:var(--ink-3);letter-spacing:.01em}
+.chips{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:.35rem}
+.chip{min-width:0;min-height:2.6rem;font-size:.78rem;font-weight:500;
   border-radius:999px;border:1px solid var(--line);background:var(--surface-2);
-  color:var(--ink-2);padding:.3rem .5rem}
+  color:var(--ink-2);padding:.3rem .2rem;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:640}
 .dur{font-size:.78rem;color:var(--ink-3);margin-top:.7rem;font-variant-numeric:tabular-nums}
 .dosn{display:flex;gap:.6rem;margin-top:.8rem}
@@ -168,7 +169,7 @@ body.sin-scroll{overflow:hidden}
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);
   padding:1.25rem;margin-bottom:.9rem;box-shadow:var(--shadow-s);
 }
-.ch{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem}
+.ch{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap}
 .cn{
   font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--ink-3);
   background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
@@ -176,7 +177,8 @@ body.sin-scroll{overflow:hidden}
 }
 .ct{font-size:1.24rem;font-weight:640;letter-spacing:-.022em;color:var(--ink);margin:0;
   flex:1;line-height:1.18}   /* Title 3 */
-.cm{font-size:.82rem;color:var(--ink-3);white-space:nowrap;font-weight:450}
+.cm{font-size:.82rem;color:var(--ink-3);font-weight:450;margin-left:auto;
+  white-space:nowrap;max-width:100%;overflow-wrap:anywhere}
 .rule{
   background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-m);
   padding:1rem 1.1rem;margin-bottom:1.1rem;font-size:1.02rem;line-height:1.45;
@@ -218,7 +220,7 @@ body.sin-scroll{overflow:hidden}
 .exk{font-size:.7rem;font-weight:700;color:var(--ink);margin-top:.28rem;letter-spacing:.07em;
   text-transform:uppercase}
 .chk{
-  width:2.2rem;height:2.2rem;border-radius:999px;border:2px solid var(--line-2);
+  width:2.6rem;height:2.6rem;border-radius:999px;border:2px solid var(--line-2);
   background:transparent;color:transparent;font-size:.95rem;cursor:pointer;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;transition:all .18s;padding:0;
 }
@@ -284,7 +286,7 @@ ol.steps li strong{color:var(--ink);font-weight:600}
 /* ── escala de dolor ──────────────────────────────────────── */
 .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:.3rem}
 .sc{
-  min-width:0;padding:0;aspect-ratio:1;border-radius:999px;border:1px solid var(--line);
+  min-width:0;padding:0;min-height:2.6rem;border-radius:999px;border:1px solid var(--line);
   background:var(--surface-2);color:var(--ink-2);font-family:var(--sans);
   font-size:1rem;font-weight:520;display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:all .16s;
