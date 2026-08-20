@@ -164,6 +164,66 @@ PISCINA_40 = ["5 min nado espalda.",
               "15 min agua profunda: aqua running, cross country, tijeras.",
               "15 min agua media: marching, aducciones, sentadilla acuática.",
               "5 min nado espalda de vuelta a la calma."]
+# ── piscina por bloques ─────────────────────────────────────────────
+# Tabla en vez de lista: cada linea se marca, tiene ficha y cronometro.
+# La progresion va de agua profunda (sin apoyo) a agua al pecho y de ahi a
+# tierra. La braza no entra hasta R3 porque es el gesto que mas abre la cadera.
+AGUA_R1 = [
+    ("nado-espalda", "Nado espalda", "5 min", "calentamiento, sin prisa"),
+    ("aqua-running", "Aqua running en agua profunda", "10 min", "deberías poder hablar"),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "5 × 20 s", "flotador pequeño"),
+    ("marching-agua", "Marching alto en agua", "4 min", "agua a la cadera"),
+    ("flotacion-pasiva", "Flotación pasiva", "3 min", "respiración baja"),
+]
+AGUA_R1_LARGA = [
+    ("nado-espalda", "Nado espalda", "5 min", ""),
+    ("aqua-running", "Aqua running en agua profunda", "15 min", "el cardio del bloque"),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "6 × 20 s", ""),
+    ("tijeras-bordillo", "Tijeras horizontales en el bordillo", "3 × 12", "recorrido corto"),
+    ("marching-agua", "Marching alto en agua", "5 min", ""),
+    ("flotacion-pasiva", "Flotación pasiva", "4 min", ""),
+]
+AGUA_R2 = [
+    ("nado-espalda", "Nado espalda", "5 min", ""),
+    ("aqua-running", "Aqua running en agua profunda", "12 min", ""),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "6 × 25 s", "sube de flotador"),
+    ("tijeras-bordillo", "Tijeras horizontales en el bordillo", "3 × 12", ""),
+    ("churro-aduccion", "Aducción con churro lateral", "3 × 12 por pierna", ""),
+    ("plancha-tabla-agua", "Plancha con tabla sumergida", "5 × 20 s", ""),
+    ("flotacion-pasiva", "Flotación pasiva", "3 min", ""),
+]
+AGUA_R3 = [
+    ("nado-espalda", "Nado espalda", "5 min", ""),
+    ("aqua-running", "Aqua running en agua profunda", "10 min", ""),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "6 × 30 s", "flotador grande"),
+    ("churro-aduccion", "Aducción con churro lateral", "4 × 12 por pierna", ""),
+    ("marcha-lateral-agua", "Marcha lateral con el agua al pecho", "4 × 10 m", "cadena cerrada"),
+    ("rotacion-tabla-agua", "Antirrotación con tabla", "3 × 10 por lado", ""),
+    ("patada-braza", "Patada de braza controlada", "4 × 25 m", "primera vez del proceso"),
+]
+AGUA_R4 = [
+    ("nado-espalda", "Nado espalda", "5 min", ""),
+    ("marcha-lateral-agua", "Marcha lateral con el agua al pecho", "6 × 10 m", "agua a la cintura"),
+    ("churro-aduccion", "Aducción con churro lateral", "4 × 15 por pierna", ""),
+    ("rotacion-tabla-agua", "Antirrotación con tabla", "4 × 10 por lado", "antes del golpeo"),
+    ("plancha-tabla-agua", "Plancha con tabla sumergida", "5 × 30 s", ""),
+    ("patada-braza", "Patada de braza controlada", "6 × 25 m", ""),
+    ("flotacion-pasiva", "Flotación pasiva", "3 min", ""),
+]
+AGUA_R5 = [
+    ("nado-espalda", "Nado espalda", "5 min", "descarga del día de campo"),
+    ("aqua-running", "Aqua running en agua profunda", "10 min", "regenerativo"),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "5 × 30 s", "mantenimiento"),
+    ("marcha-lateral-agua", "Marcha lateral con el agua al pecho", "4 × 10 m", ""),
+    ("flotacion-pasiva", "Flotación pasiva", "4 min", ""),
+]
+AGUA_CORTA = [
+    ("nado-espalda", "Nado espalda", "5 min", ""),
+    ("aqua-running", "Aqua running en agua profunda", "8 min", ""),
+    ("pull-buoy-aductor", "Aducción isométrica con pull buoy", "5 × 20 s", ""),
+    ("flotacion-pasiva", "Flotación pasiva", "4 min", ""),
+]
+
 PISTOLA = ["Dorsal y trapecio inferior, que es lo que acabas de trabajar.",
            "Cuádriceps, barrido lento de rodilla hacia arriba.",
            "Isquiosurales, de rodilla a glúteo.",
@@ -325,7 +385,7 @@ APERTURA = sesion(
     [sec("01", "Línea base", "10 min · antes de nada", "test", []),
      sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
      sec("03", "Gimnasio · Plan A empuje", "45 min · RIR 3", "tabla", PLAN_A[:7]),
-     sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+     sec("04", "Piscina", "25 min", "tabla", AGUA_R1),
      sec("05", "Fisioterapia · valoración", "la sesión más importante del bloque",
          "pasos", FISIO_VAL, FOTOS_FISIO),
      sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC, FOTOS_EMS)])
@@ -336,7 +396,7 @@ MICRO["R1"] = {
            "Diez días parado se pagan la primera semana. RIR 3, cargas al 60-70 %, y ni un kilo de más por encontrarte bien.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
             sec("03", "Gimnasio · Plan A empuje", "50 min · RIR 3", "tabla", PLAN_A),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("04", "Piscina", "25 min", "tabla", AGUA_R1),
             sec("05", "Fisioterapia", "sesión de hoy", "pasos", FISIO_VAL, FOTOS_FISIO),
             sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC, FOTOS_EMS)]),
  1: sesion("Tirón + descarga con pistola",
@@ -349,7 +409,7 @@ MICRO["R1"] = {
  2: sesion("Rehab larga + agua + fisio local",
            "Hoy se junta todo lo específico: cuarenta minutos de rehab, treinta y cinco de agua y el fisio tocando la zona. Si un día vas justo de tiempo, que no sea este.",
            [sec("02", "Rehab de aductor y core", "40 min", "tabla", MOV_LARGA),
-            sec("04", "Piscina", "35 min", "lista", PISCINA_35, FOTOS_PISCINA),
+            sec("04", "Piscina", "35 min", "tabla", AGUA_R1_LARGA),
             sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO),
             sec("06", "EMS y shiatsu", "30 min · tarde", "lista",
                 EMS_REC + ["Shiatsu lumbar y dorsal 15 min."], FOTOS_EMS + FOTOS_CIERRE[1:])]),
@@ -362,13 +422,13 @@ MICRO["R1"] = {
            "Coge el plan que menos hayas repetido esta semana y mantén el RIR de siempre.",
            [sec("02", "Movilidad y activación", "18 min", "tabla", MOV_BASE),
             sec("03", "Gimnasio · Plan A o B", "50 min · RIR 3", "tabla", PLAN_A),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("04", "Piscina", "25 min", "tabla", AGUA_R1),
             sec("05", "Fisioterapia · descarga", "post-gimnasio", "pasos", FISIO_DES, FOTOS_FISIO),
             sec("06", "Electroestimulación", "20 min", "lista", EMS_REC, FOTOS_EMS)]),
  5: sesion("Agua larga + brazo",
            "Cuarenta minutos de agua, que es donde más volumen entra sin que te lo cobren mañana. El brazo, al salir.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
-            sec("04", "Piscina", "40 min", "lista", PISCINA_40, FOTOS_PISCINA),
+            sec("04", "Piscina", "40 min", "tabla", AGUA_R1_LARGA),
             sec("03", "Gimnasio · brazo y hombro", "25 min", "tabla", PLAN_D[:5]),
             sec("06", "Shiatsu completo", "30 min · noche", "lista",
                 ["Cervical, dorsal y lumbar, 30 min.", "Shiatsu de pies.", "Hidratar después."])]),
@@ -400,7 +460,7 @@ MICRO["R2"] = {
            [sec("02", "Rehab de aductor y core", "35 min", "tabla",
                 MOV_BASE + [("copenhagen-corto", "Copenhagen corto", "2 × 6 / lado", "NUEVO"),
                             ("aductor-banda", "Aductor con banda", "3 × 12 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("04", "Piscina", "35 min", "tabla", AGUA_R2),
             sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO)]),
  3: sesion("Upper extra + carrera continua",
            "Trabajo largo de tren superior y una carrera que puedas hacer hablando. Los progresivos aún no.",
@@ -414,7 +474,7 @@ MICRO["R2"] = {
            [sec("02", "Rehab de aductor y core", "30 min", "tabla",
                 MOV_BASE + [("copenhagen-corto", "Copenhagen corto", "2 × 8 / lado", "")]),
             sec("03", "Gimnasio · Plan C ligero", "30 min · RIR 3", "tabla", PLAN_C[:4]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA)]),
+            sec("04", "Piscina", "35 min", "tabla", AGUA_R2)]),
  5: sesion("Carrera con progresivos + tirón corto",
            "Te acercas a la velocidad por primera vez. Progresivos suaves y sin pasar del 70 %.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
@@ -454,7 +514,7 @@ MICRO["R3"] = {
            "Sesión de mantenimiento entre los dos días de campo. Poco vistosa y de las que más sostienen.",
            [sec("02", "Rehab de aductor y core", "35 min", "tabla",
                 MOV_LARGA + [("copenhagen-largo", "Copenhagen largo", "3 × 6 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("04", "Piscina", "40 min", "tabla", AGUA_R3),
             sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO)]),
  3: sesion("Aceleración y frenada",
            "Hoy aceleras de verdad por primera vez. Se entra progresivo en cada recta y se frena en tres o cuatro pasos, nunca en seco.",
@@ -513,7 +573,7 @@ MICRO["R4"] = {
            "El trabajo específico no se abandona aunque el campo empiece a mandar. Hoy toca sostenerlo.",
            [sec("02", "Rehab de aductor y core", "30 min", "tabla",
                 MOV_LARGA + [("copenhagen-largo", "Copenhagen largo", "3 × 8 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("04", "Piscina", "40 min", "tabla", AGUA_R4),
             sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES, FOTOS_FISIO)]),
  3: sesion("COD cerrado + golpeo alto",
            "Ángulos cerrados y, al final, el primer golpeo con empeine alto desde que empezaste.",
@@ -567,7 +627,7 @@ MICRO["R5"] = {
            "Mantenimiento específico. El Copenhagen no se retira cuando vuelvas a jugar: una o dos veces por semana, indefinidamente.",
            [sec("02", "Rehab de aductor y core", "25 min", "tabla",
                 MOV_BASE + [("copenhagen-largo", "Copenhagen largo", "3 × 8 / lado", "")]),
-            sec("04", "Piscina", "20 min", "lista", PISCINA_25[:3], FOTOS_PISCINA),
+            sec("04", "Piscina", "20 min", "tabla", AGUA_CORTA),
             sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES, FOTOS_FISIO)]),
  3: sesion("Golpeo y balón parado",
            "Faltas y córners a la intensidad que quieras, con las series contadas. Es tu gesto y también el que más castiga el pubis.",
@@ -703,3 +763,64 @@ for _bid, _dias in MICRO.items():
 
 APERTURA["secciones"].append(
     sec("11", "Estiramientos", "12 min · al terminar", "tabla", ESTIRA_BASE))
+
+# ── mas dias de agua ────────────────────────────────────────────────
+# La piscina descarga en lugar de fatigar, asi que puede ir casi a diario. En
+# los dias de gimnasio pesado o de campo va DESPUES, como descarga; el domingo
+# va sola y corta. La sesion larga de cada bloque se queda donde ya estaba.
+AGUA_EXTRA = {
+    "R2": {0: ("AGUA_CORTA", "20 min"), 5: ("AGUA_R2", "30 min")},
+    "R3": {0: ("AGUA_CORTA", "20 min"), 4: ("AGUA_R3", "30 min"),
+           6: ("AGUA_CORTA", "20 min")},
+    "R4": {0: ("AGUA_CORTA", "20 min"), 4: ("AGUA_R4", "30 min"),
+           6: ("AGUA_CORTA", "20 min")},
+    "R5": {4: ("AGUA_R5", "25 min"), 6: ("AGUA_CORTA", "20 min")},
+}
+_RUT = {"AGUA_R1": AGUA_R1, "AGUA_R1_LARGA": AGUA_R1_LARGA, "AGUA_R2": AGUA_R2,
+        "AGUA_R3": AGUA_R3, "AGUA_R4": AGUA_R4, "AGUA_R5": AGUA_R5,
+        "AGUA_CORTA": AGUA_CORTA}
+
+for _b, _dias in AGUA_EXTRA.items():
+    for _d, (_var, _dur) in _dias.items():
+        _ses = MICRO[_b][_d]
+        _secs = _ses["secciones"]
+        if any(s["titulo"] == "Piscina" for s in _secs):
+            continue
+        _agua = sec("04", "Piscina", _dur, "tabla", _RUT[_var])
+        # detras del gimnasio o del campo, que es donde funciona como descarga
+        _pos = 1
+        for _i, _s in enumerate(_secs):
+            if _s["n"].startswith("03") or _s["n"].startswith("07"):
+                _pos = _i + 1
+        _secs.insert(_pos, _agua)
+
+# ── fotos en las secciones de texto que aun no las tenian ───────────
+# Campo, partido y shiatsu eran las unicas sin imagen. Se reutilizan fichas
+# del catalogo segun de que va cada seccion.
+FOTOS_POR_TITULO = [
+    ("balon parado", ["falta-balon-parado", "golpeo-empeine", "pase-largo"]),
+    ("golpeo",       ["golpeo-empeine", "pase-interior", "pase-largo"]),
+    ("tecnica",      ["pase-interior", "conduccion-conos", "pase-largo"]),
+    ("agilidad",     ["conduccion-conos", "progresivos-40m", "trote-progresivo"]),
+    ("velocidad",    ["progresivos-40m", "trote-progresivo"]),
+    ("arrancada",    ["progresivos-40m", "trote-progresivo"]),
+    ("aceleracion",  ["progresivos-40m", "trote-progresivo"]),
+    ("progresivos",  ["progresivos-40m", "trote-progresivo"]),
+    ("carrera",      ["trote-progresivo", "progresivos-40m"]),
+    ("futbol",       ["conduccion-conos", "pase-interior", "golpeo-empeine"]),
+    ("partido",      ["golpeo-empeine", "conduccion-conos", "falta-balon-parado"]),
+    ("shiatsu",      ["masaje-espalda-maquina", "movilidad-nocturna"]),
+    ("campo",        ["trote-progresivo", "conduccion-conos"]),
+]
+_ACENTOS = str.maketrans("áéíóúñ", "aeioun")
+
+for _b in MICRO:
+    for _d in MICRO[_b]:
+        for _s in MICRO[_b][_d]["secciones"]:
+            if _s["tipo"] not in ("lista", "pasos") or _s["fotos"]:
+                continue
+            _t = _s["titulo"].lower().translate(_ACENTOS)
+            for _clave, _fotos in FOTOS_POR_TITULO:
+                if _clave in _t:
+                    _s["fotos"] = list(_fotos)
+                    break

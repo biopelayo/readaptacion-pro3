@@ -105,6 +105,43 @@ h1 .g{color:var(--ink-3);font-weight:400}
   letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .mini-anillo:active{transform:scale(.92)}
 
+/* -- modo entreno ------------------------------------------ */
+body.sin-scroll{overflow:hidden}
+.btn.mini{padding:.4rem .7rem;font-size:.72rem}
+.btn.entrar{margin:0 0 1.1rem;background:var(--accent);color:var(--on-accent);
+  border-color:var(--accent);font-weight:640;font-size:1rem;padding:.95rem}
+.ent{position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + .7rem) 1rem calc(env(safe-area-inset-bottom) + 1rem)}
+.ent-top{flex:0 0 auto}
+.ent-pb{height:.3rem;border-radius:999px;background:var(--surface-3);overflow:hidden;margin-bottom:.7rem}
+.ent-pb i{display:block;height:100%;background:var(--ink);border-radius:999px;transition:width .35s}
+.ent-c{display:flex;justify-content:space-between;align-items:center;gap:.6rem;
+  font-size:.82rem;color:var(--ink-3)}
+.ent-x{width:2.4rem;height:2.4rem;border-radius:999px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink-2);font-size:1rem;flex:0 0 auto}
+.ent-mid{flex:1 1 auto;overflow-y:auto;display:flex;flex-direction:column;
+  justify-content:center;gap:.55rem;padding:.9rem 0;text-align:center}
+.ent-mid img,.ent-mid .ph{width:100%;max-height:38vh;object-fit:cover;border-radius:var(--r-l);
+  border:1px solid var(--line);display:block}
+.ent-mid .ph{height:22vh;background:var(--surface-2)}
+.ent-n{font-size:clamp(1.5rem,6.5vw,2.1rem);font-weight:660;letter-spacing:-.03em;
+  line-height:1.1;margin-top:.5rem;text-wrap:balance}
+.ent-d{font-size:1.35rem;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ent-no{font-size:.95rem;color:var(--ink-3)}
+.ent-err,.ent-av{font-size:.88rem;line-height:1.4;text-align:left;border-radius:var(--r-m);
+  padding:.7rem .85rem;color:var(--ink-2);background:var(--surface-2)}
+.ent-err b{color:var(--ink)}
+.ent-av{background:var(--bad-bg);color:var(--bad)}
+.ent-kg{display:flex;align-items:center;gap:.6rem;justify-content:center}
+.ent-kg input{width:6rem;text-align:center;font-size:1.2rem;padding:.6rem;border-radius:var(--r-s);
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.ent-kg span{font-size:.8rem;color:var(--ink-3)}
+.ent-bot{flex:0 0 auto;display:flex;flex-direction:column;gap:.55rem}
+.ent-r{display:flex;gap:.5rem}
+.ent-r .btn{flex:1;min-height:var(--tap)}
+.ent-bot .btn.wide{min-height:3.4rem;font-size:1.05rem;font-weight:640}
+.ring.libre{border-color:var(--ink-4)}
+
 /* ── superficies ──────────────────────────────────────────── */
 .card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);

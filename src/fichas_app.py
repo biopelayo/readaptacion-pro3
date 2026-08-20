@@ -6,10 +6,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fichas import FICHAS  # noqa: E402
 from fichas_extra import EXTRA  # noqa: E402
 from fichas_v3 import V3  # noqa: E402
+from fichas_agua import AGUA  # noqa: E402
 
 TODAS = dict(FICHAS)
 TODAS.update(EXTRA)
 TODAS.update(V3)
+TODAS.update(AGUA)
 
 EJ = {}
 for bloque, (titulo, _sub, fs) in TODAS.items():

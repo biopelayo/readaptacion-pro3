@@ -67,6 +67,7 @@ HTML = """<!DOCTYPE html>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<div id="ent"></div>
 <div id="tm"></div>
 <div id="ga-slot"></div>
 <nav class="nav">
@@ -293,7 +294,164 @@ function anilloMini(fecha) {
     '<svg viewBox="0 0 36 36">' + a + '</svg><span>' + i.n + '</span></div>';
 }
 
-/* ── pantalla de arranque: el anillo de los cinco bloques ──── */
+/* -- cronometro de posta ------------------------------------
+   Lee la dosis escrita en el plan y decide como contar:
+   "5 x 30 s" -> series de tiempo | "10 min" -> cuenta atras sola
+   "3 x 12"   -> series por repeticiones, el crono cuenta el descanso */
+function leeDosis(txt) {
+  const s = (txt || "").replace(/\u00d7/g, "x").toLowerCase();
+  let m = s.match(/(\d+)\s*x\s*(\d+)\s*(s|seg)(?![a-z])/);
+  if (m) return {modo: "tiempo", series: +m[1], trabajo: +m[2], descanso: 20};
+  m = s.match(/(\d+)\s*x\s*(\d+)\s*min/);
+  if (m) return {modo: "tiempo", series: +m[1], trabajo: +m[2] * 60, descanso: 60};
+  m = s.match(/^(\d+)\s*min/);
+  if (m) return {modo: "duracion", series: 1, trabajo: +m[1] * 60, descanso: 0};
+  m = s.match(/(\d+)\s*x\s*(\d+)/);
+  if (m) return {modo: "reps", series: +m[1], reps: +m[2], trabajo: 0, descanso: 75};
+  m = s.match(/^(\d+)\s*s(?![a-z])/);
+  if (m) return {modo: "duracion", series: 1, trabajo: +m[1], descanso: 0};
+  return null;
+}
+
+let T = null;
+function abreCrono(cfg) {
+  const d = leeDosis(cfg.dosis);
+  if (!d) return;
+  T = Object.assign({}, d, {
+    nombre: cfg.nombre || "", dosis: cfg.dosis || "", pct: cfg.pct || null,
+    serie: 1, fase: d.modo === "reps" ? "libre" : "trabajo",
+    seg: d.modo === "reps" ? 0 : d.trabajo, corriendo: true,
+  });
+  pintaTimer();
+  T.int = setInterval(tick, 1000);
+}
+/* la llamada vieja del isometrico sigue valiendo */
+function abreTimer(pct) {
+  abreCrono({nombre: "Isometrico de aductor", dosis: "5 x 30 s", pct: pct});
+}
+
+function tick() {
+  if (!T || !T.corriendo) return;
+  if (T.fase === "libre") { T.seg++; return pintaTimer(); }
+  T.seg--;
+  if (T.seg <= 0) {
+    if (T.fase === "trabajo") {
+      if (T.serie >= T.series) return cierraTimer(true);
+      T.fase = "descanso"; T.seg = T.descanso;
+    } else {
+      T.serie++;
+      if (T.modo === "reps") { T.fase = "libre"; T.seg = 0; }
+      else { T.fase = "trabajo"; T.seg = T.trabajo; }
+    }
+    if (navigator.vibrate) navigator.vibrate(220);
+  }
+  pintaTimer();
+}
+
+function mmss(n) {
+  return n >= 60 ? Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0") : String(n);
+}
+
+function pintaTimer() {
+  if (!T) return;
+  const tr = T.fase === "trabajo", lib = T.fase === "libre";
+  const cab = T.modo === "duracion"
+    ? esc(T.nombre) + " \u00b7 " + esc(T.dosis)
+    : "Serie " + T.serie + " de " + T.series + " \u00b7 " + esc(T.nombre);
+  const pie = lib
+    ? "Haz las " + T.reps + " repeticiones a tu ritmo y pulsa Serie hecha."
+    : tr
+      ? (T.pct
+          ? "Aprieta al " + T.pct + " % y mant\u00e9n. Respira: no aguantes el aire. Si el dolor sube dentro de la serie, para."
+          : "En marcha. Si el dolor sube durante la serie, para y an\u00f3talo.")
+      : T.pct ? "Descanso. Suelta del todo la cara interna del muslo."
+              : "Descanso. Respira y suelta antes de la siguiente serie.";
+  document.getElementById("tm").innerHTML =
+    '<div class="tm"><div class="s">' + cab + '</div>' +
+    '<div class="ring ' + (lib ? "libre" : tr ? "run" : "rest") + '">' +
+    '<div class="n' + (tr || lib ? "" : " rest") + '">' + mmss(T.seg) + '</div></div>' +
+    '<div class="q">' + pie + '</div>' +
+    '<div class="row">' +
+    (lib ? '<button class="btn" data-tm="hecha">Serie hecha</button>'
+         : '<button class="btn" data-tm="pausa">' + (T.corriendo ? "Pausar" : "Seguir") + '</button>') +
+    '<button class="btn ghost" data-tm="salta">Saltar</button>' +
+    '<button class="btn ghost" data-tm="cierra">Cerrar</button></div></div>';
+}
+
+/* -- modo entreno --------------------------------------------
+   Un ejercicio por pantalla, foto grande y nada de scroll. Recorre
+   las mismas tareas del dia, asi que lo que marcas aqui queda marcado alli. */
+let ENT = null;
+function tareasDe(s) {
+  const out = [];
+  s.secs.forEach(sec => {
+    if (sec.tipo !== "tabla") return;
+    const gym = sec.titulo.toLowerCase().indexOf("gimnasio") >= 0;
+    sec.items.forEach((it, k) => out.push({
+      id: sec.n + "_" + k, sec: sec.titulo, slug: it[0] || "",
+      nombre: it[1], dosis: it[2], nota: it[3] || "", gym: gym,
+    }));
+  });
+  return out;
+}
+function abreEntreno(i) {
+  const s = sesionDe(FECHA);
+  const tot = tareasDe(s);
+  if (!tot.length) return;
+  ENT = {lista: tot, i: Math.max(0, Math.min(i || 0, tot.length - 1)), pct: s.pct};
+  document.body.classList.add("sin-scroll");
+  pintaEntreno();
+}
+function cierraEntreno() {
+  ENT = null;
+  document.body.classList.remove("sin-scroll");
+  document.getElementById("ent").innerHTML = "";
+  render();
+}
+function pintaEntreno() {
+  if (!ENT) return;
+  const t = ENT.lista[ENT.i], r = S.reg[FECHA] || {};
+  const on = (r.hechos || []).indexOf(t.id) >= 0;
+  const f = D.ej[t.slug];
+  const hechas = ENT.lista.filter(x => (r.hechos || []).indexOf(x.id) >= 0).length;
+  const im = D.img[t.slug]
+    ? '<img src="' + D.img[t.slug] + '" alt="">'
+    : '<div class="ph"></div>';
+  let kg = "";
+  if (t.gym) {
+    const clave = t.slug || t.nombre;
+    const val = ((r.cargas || {})[clave]) || "";
+    const ant = ultimaCarga(clave, FECHA);
+    kg = '<div class="ent-kg"><input type="text" inputmode="decimal" data-kg="' + esc(clave) +
+         '" value="' + esc(val) + '" placeholder="kg"><span>' +
+         (ant ? "\u00faltima vez " + esc(ant.kg) : "anota la carga") + '</span></div>';
+  }
+  const crono = leeDosis(t.dosis)
+    ? '<button class="btn ghost" data-crono="' + ENT.i + '">Cron\u00f3metro</button>' : "";
+  document.getElementById("ent").innerHTML =
+    '<div class="ent">' +
+    '<div class="ent-top">' +
+    '<div class="ent-pb"><i style="width:' + Math.round(hechas / ENT.lista.length * 100) + '%"></i></div>' +
+    '<div class="ent-c"><span>' + (ENT.i + 1) + ' de ' + ENT.lista.length + ' \u00b7 ' + esc(t.sec) +
+    '</span><button class="ent-x" data-ent="cierra" aria-label="Salir">\u2715</button></div></div>' +
+    '<div class="ent-mid">' + im +
+    '<div class="ent-n">' + esc(t.nombre) + '</div>' +
+    '<div class="ent-d">' + esc(t.dosis) + '</div>' +
+    (t.nota ? '<div class="ent-no">' + esc(t.nota) + '</div>' : '') +
+    (f && f.error ? '<div class="ent-err"><b>Error t\u00edpico.</b> ' + esc(f.error) + '</div>' : '') +
+    (f && f.aviso ? '<div class="ent-av">' + esc(f.aviso) + '</div>' : '') +
+    kg + '</div>' +
+    '<div class="ent-bot">' +
+    '<div class="ent-r">' +
+    '<button class="btn ghost" data-ent="prev"' + (ENT.i === 0 ? ' disabled' : '') + '>Anterior</button>' +
+    crono +
+    '<button class="btn ghost" data-ent="next">Saltar</button></div>' +
+    '<button class="btn wide ' + (on ? 'ghost' : '') + '" data-ent="hecho">' +
+    (on ? 'Hecho \u2713 \u00b7 siguiente' : 'Marcar hecho y seguir') + '</button>' +
+    '</div></div>';
+}
+
+/* -- pantalla de arranque: el anillo de los cinco bloques ──── */
 function splashHTML() {
   const i = bloqueDe(HOY0);
   const B = D.bloques;
@@ -415,6 +573,11 @@ function tira(slugs) {
 /* ── vista HOY ────────────────────────────────────────────── */
 function vistaHoy() {
   const s = sesionDe(FECHA);
+  /* indice de tareas: lo comparten el cronometro de cada fila y el modo entreno */
+  const idxPosta = {};
+  const postas = tareasDe(s);
+  postas.forEach((x, n) => { idxPosta[x.id] = n; });
+
   const r = S.reg[FECHA] || {};
   const i = s.info;
   let h = "";
@@ -448,6 +611,10 @@ function vistaHoy() {
        '<div class="pl">' + pr.pct + ' %</div></div>' +
        '<div class="pbar' + (pr.pct >= 100 ? ' full' : '') + '"><i style="width:' +
        pr.pct + '%"></i></div></div>';
+
+  if (postas.length)
+    h += '<button class="btn wide entrar" data-entreno="1">Modo entreno · ' +
+         postas.length + ' postas</button>';
 
   /* semaforo de la mañana */
   h += '<div class="card"><div class="ch"><span class="cn">01</span>' +
@@ -495,9 +662,10 @@ function vistaHoy() {
                   (ant ? '<span>última vez <b>' + esc(ant.kg) + '</b></span>'
                        : '<span>anota la carga</span>') + '</div>';
         }
-        if (it[0] === "isometrico-aductor") {
-          extra += '<div class="kg"><button class="btn ghost" style="padding:7px 12px;font-size:11px" ' +
-                   'data-timer="' + s.pct + '">Cronómetro 5 × 30 s</button></div>';
+        if (leeDosis(it[2])) {                         /* cronometro de la posta */
+          extra += '<div class="kg"><button class="btn ghost mini" data-posta="' +
+                   (idxPosta[sec.n + "_" + k] || 0) + '">Cronómetro ' + esc(it[2]) +
+                   '</button></div>';
         }
         h += '<div class="ex" data-ficha="' + (it[0] || "") + '">' + im +
              '<div><div class="exn">' + esc(it[1]) + '</div>' +
@@ -759,8 +927,46 @@ document.addEventListener("click", e => {
   if (t.dataset.timer) { abreTimer(+t.dataset.timer); return; }
   if (t.dataset.tm) {
     if (t.dataset.tm === "pausa") { T.corriendo = !T.corriendo; return pintaTimer(); }
-    if (t.dataset.tm === "salta") { T.seg = 1; return tick(); }
+    if (t.dataset.tm === "hecha") {
+      if (T.serie >= T.series) return cierraTimer(true);
+      T.fase = "descanso"; T.seg = T.descanso; return pintaTimer();
+    }
+    if (t.dataset.tm === "salta") {
+      if (T.fase === "libre") { T.fase = "trabajo"; T.seg = 1; }
+      else T.seg = 1;
+      return tick();
+    }
     return cierraTimer(false);
+  }
+  if (t.dataset.crono) {
+    const x = ENT ? ENT.lista[+t.dataset.crono] : null;
+    if (x) abreCrono({nombre: x.nombre, dosis: x.dosis,
+                      pct: x.slug === "isometrico-aductor" ? ENT.pct : null});
+    return;
+  }
+  if (t.dataset.posta) {
+    const ss = sesionDe(FECHA), l = tareasDe(ss), x = l[+t.dataset.posta];
+    if (x) abreCrono({nombre: x.nombre, dosis: x.dosis,
+                      pct: x.slug === "isometrico-aductor" ? ss.pct : null});
+    return;
+  }
+  if (t.dataset.entreno) { abreEntreno(+t.dataset.entreno - 1); return; }
+  if (t.dataset.ent) {
+    if (t.dataset.ent === "cierra") return cierraEntreno();
+    if (t.dataset.ent === "prev") { ENT.i = Math.max(0, ENT.i - 1); return pintaEntreno(); }
+    if (t.dataset.ent === "next") {
+      if (ENT.i >= ENT.lista.length - 1) return cierraEntreno();
+      ENT.i++; return pintaEntreno();
+    }
+    if (t.dataset.ent === "hecho") {
+      const r = S.reg[FECHA] = S.reg[FECHA] || {};
+      r.hechos = r.hechos || [];
+      const x = ENT.lista[ENT.i].id;
+      if (r.hechos.indexOf(x) < 0) r.hechos.push(x);
+      save();
+      if (ENT.i >= ENT.lista.length - 1) return cierraEntreno();
+      ENT.i++; return pintaEntreno();
+    }
   }
   if (t.closest && t.closest("#sp")) { cierraSplash(); return; }
   if (t.dataset.abstract) {
@@ -788,43 +994,6 @@ document.addEventListener("input", e => {
   }
 });
 
-/* ── cronometro de isometricos ────────────────────────────── */
-let T = null;
-function abreTimer(pct) {
-  T = {serie: 1, series: 5, fase: "trabajo", seg: 30, corriendo: true, pct: pct};
-  pintaTimer();
-  T.int = setInterval(tick, 1000);
-}
-function tick() {
-  if (!T || !T.corriendo) return;
-  T.seg--;
-  if (T.seg <= 0) {
-    if (T.fase === "trabajo") {
-      if (T.serie >= T.series) return cierraTimer(true);
-      T.fase = "descanso"; T.seg = 30;
-    } else {
-      T.fase = "trabajo"; T.seg = 30; T.serie++;
-    }
-    if (navigator.vibrate) navigator.vibrate(220);
-  }
-  pintaTimer();
-}
-function pintaTimer() {
-  if (!T) return;
-  const tr = T.fase === "trabajo";
-  document.getElementById("tm").innerHTML =
-    '<div class="tm"><div class="s">Serie ' + T.serie + ' de ' + T.series +
-    ' · isométrico al ' + T.pct + ' %</div>' +
-    '<div class="ring ' + (tr ? "run" : "rest") + '"><div class="n' + (tr ? "" : " rest") + '">' +
-    T.seg + '</div></div>' +
-    '<div class="q">' + (tr
-      ? "Aprieta al " + T.pct + " % y mantén. Respira: no aguantes el aire. Si el dolor sube dentro de la serie, para."
-      : "Descanso. Suelta del todo la cara interna del muslo.") + '</div>' +
-    '<div class="row"><button class="btn" data-tm="pausa">' +
-    (T.corriendo ? "Pausar" : "Seguir") + '</button>' +
-    '<button class="btn ghost" data-tm="salta">Saltar</button>' +
-    '<button class="btn ghost" data-tm="cierra">Cerrar</button></div></div>';
-}
 function cierraTimer(completo) {
   if (T && T.int) clearInterval(T.int);
   T = null;
@@ -877,6 +1046,7 @@ function exporta(tipo) {
 
 /* superficie de pruebas: la usa test/test.html */
 window.__t = {iso, parse, suma, dias, wd, bloqueDe, sesionDe, progresoDe, racha,
+              leeDosis, tareasDe,
               ultimaCarga, exporta, D, get S(){ return S; }, set S(x){ S = x; },
               setVista: v => { VISTA = v; render(); },
               setFecha: f => { FECHA = f; render(); },

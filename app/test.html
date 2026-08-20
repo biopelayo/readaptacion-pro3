@@ -207,7 +207,7 @@ document.getElementById("fr").onload = function () {
   });
 
   /* ── catálogo ───────────────────────────────────────────── */
-  t("hay 91 fichas de ejercicio", () => eq(Object.keys(T.D.ej).length, 91));
+  t("hay 98 fichas de ejercicio", () => eq(Object.keys(T.D.ej).length, 98));
   t("todas las fichas tienen pasos y error", () => {
     for (const k in T.D.ej) {
       const e = T.D.ej[k];
@@ -276,7 +276,7 @@ document.getElementById("fr").onload = function () {
     return m ? "referencias externas: " + [...new Set(m)].join(", ") : true;
   });
   t("la app pesa menos de 6 MB", () => {
-    /* 91 fotos embebidas para que funcione sin cobertura: 6 MB es el techo
+    /* 98 fotos embebidas para que funcione sin cobertura: 6 MB es el techo
        razonable de una app instalable, y una sola foto de móvil pesa 4 */
     const kb = Math.round(w.document.documentElement.innerHTML.length / 1024);
     return kb < 6144 ? true : "pesa " + kb + " KB";
@@ -386,14 +386,16 @@ document.getElementById("fr").onload = function () {
     const huerfanas = Object.keys(T.D.ej).filter(k => !vistas.has(k));
     return huerfanas.length ? "no se ven nunca: " + huerfanas.join(", ") : true;
   });
-  t("las secciones de texto llevan su tira de fotos", () => {
-    let con = 0;
+  t("ninguna seccion de texto se queda sin imagenes", () => {
+    /* las de tabla ya pintan foto en cada fila; las de texto necesitan su tira */
+    const sin = new Set();
     Object.keys(T.D.micro).forEach(bid =>
       Object.keys(T.D.micro[bid]).forEach(d =>
         T.D.micro[bid][d].secciones.forEach(s => {
-          if ((s.fotos || []).length) con++;
+          if ((s.tipo === "lista" || s.tipo === "pasos") && !(s.fotos || []).length)
+            sin.add(bid + " " + s.titulo);
         })));
-    return con >= 25 ? true : "solo " + con + " secciones con fotos";
+    return sin.size ? "sin fotos: " + Array.from(sin).slice(0, 4).join(", ") : true;
   });
   t("las fichas nuevas traen aviso donde toca", () => {
     const criticos = ["copenhagen-corto", "copenhagen-largo", "aductor-excentrico",
@@ -425,6 +427,82 @@ document.getElementById("fr").onload = function () {
   t("no queda el reframe de la apertura", () => {
     return w.document.documentElement.innerHTML.indexOf("Lo que cuenta hoy no es") < 0
       ? true : "el texto sigue en el paquete";
+  });
+
+  t("la piscina trabaja el aductor en los cinco bloques", () => {
+    const clave = ["pull-buoy-aductor", "churro-aduccion", "tijeras-bordillo",
+                   "marcha-lateral-agua"];
+    const sin = [];
+    Object.keys(T.D.micro).forEach(b => {
+      let hay = false;
+      Object.keys(T.D.micro[b]).forEach(d => {
+        T.D.micro[b][d].secciones.forEach(s => {
+          if (s.titulo !== "Piscina" || s.tipo !== "tabla") return;
+          if (s.items.some(it => clave.indexOf(it[0]) >= 0)) hay = true;
+        });
+      });
+      if (!hay) sin.push(b);
+    });
+    return sin.length ? "sin aductor en agua: " + sin.join(", ") : true;
+  });
+
+  t("la braza no aparece antes de R3", () => {
+    const malos = [];
+    ["R1", "R2"].forEach(b => Object.keys(T.D.micro[b]).forEach(d => {
+      T.D.micro[b][d].secciones.forEach(s => {
+        if (s.tipo === "tabla" && s.items.some(it => it[0] === "patada-braza"))
+          malos.push(b + " dia " + d);
+      });
+    }));
+    return malos.length ? "braza en " + malos.join(", ") : true;
+  });
+
+  t("leeDosis entiende las dosis del plan", () => {
+    const f = T.leeDosis;
+    if (!f) return "no expuesta";
+    const a = f("5 × 30 s");
+    if (!a || a.modo !== "tiempo" || a.series !== 5 || a.trabajo !== 30) return "fallo en series de tiempo";
+    const b = f("10 min");
+    if (!b || b.modo !== "duracion" || b.trabajo !== 600) return "fallo en minutos";
+    const c = f("3 × 12");
+    if (!c || c.modo !== "reps" || c.series !== 3) return "fallo en repeticiones";
+    if (f("hasta notar tension")) return "deberia no reconocer texto libre";
+    return true;
+  });
+
+  t("el modo entreno recorre todas las postas del dia", () => {
+    const b = w.document.querySelector('[data-entreno]');
+    if (!b) return "no hay boton de modo entreno";
+    b.click();
+    const ov = w.document.querySelector(".ent");
+    if (!ov) return "no se abrio";
+    const n = w.document.querySelector(".ent-c span").textContent;
+    const ok = /^1 de \d+/.test(n);
+    w.document.querySelector('[data-ent="cierra"]').click();
+    return ok ? true : "contador raro: " + n;
+  });
+
+  t("el cronometro solo habla de apretar en el isometrico", () => {
+    const b = w.document.querySelector('[data-entreno]');
+    b.click();
+    let visto = null;
+    for (let n = 0; n < 40 && !visto; n++) {
+      const t2 = w.__t;
+      const c = w.document.querySelector('[data-crono]');
+      const nom = w.document.querySelector(".ent-n").textContent;
+      if (c && nom.toLowerCase().indexOf("isom") < 0) {
+        c.click();
+        visto = w.document.querySelector(".tm .q").textContent;
+        w.document.querySelector('[data-tm="cierra"]').click();
+        break;
+      }
+      w.document.querySelector('[data-ent="next"]').click();
+      if (!w.document.querySelector(".ent")) break;
+    }
+    if (w.document.querySelector('[data-ent="cierra"]'))
+      w.document.querySelector('[data-ent="cierra"]').click();
+    if (!visto) return "no se pudo abrir ningun cronometro";
+    return visto.indexOf("Aprieta al") < 0 ? true : "sale el aviso del aductor: " + visto;
   });
 
   const res = document.getElementById("res");
