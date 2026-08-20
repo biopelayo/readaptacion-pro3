@@ -86,27 +86,27 @@ MOV_BASE = [
 MOV_CORTA = MOV_BASE[:2] + MOV_BASE[3:6]
 MOV_LARGA = MOV_BASE + [
     ("dead-bug", "Dead bug lento", "3 × 8 / lado", ""),
-    (None, "Plancha lateral corta", "3 × 25 s / lado", ""),
+    ("plancha-lateral", "Plancha lateral corta", "3 × 25 s / lado", ""),
 ]
 # calentamiento previo a velocidad o golpeo: mas largo y mas activo
 CALIENTA_CAMPO = [
     ("movilidad-cadera-pie", "Movilidad activa de cadera", "3 min", ""),
-    (None, "Trote progresivo", "8 min", ""),
-    (None, "Skipping, talones y zancada lateral", "3 × 20 m", ""),
+    ("trote-progresivo", "Trote progresivo", "8 min", ""),
+    ("skipping-tecnica", "Skipping, talones y zancada lateral", "3 × 20 m", ""),
     ("isometrico-aductor", "Aducción isométrica de activación", "3 × 20 s", "CLAVE"),
-    (None, "Progresivos de 40 m", "4 al 60, 70, 80 y 85 %", ""),
+    ("progresivos-40m", "Progresivos de 40 m", "4 al 60, 70, 80 y 85 %", ""),
 ]
 
 # ── gimnasio: espalda, pecho, hombro y brazo con volumen ─────────────
 PLAN_A = [   # empuje
     ("press-pecho-maquina", "Press de pecho en máquina", "4 × 8-10", ""),
     ("press-inclinado-mancuernas", "Press inclinado con mancuernas", "4 × 8-10", ""),
-    (None, "Aperturas en máquina o con mancuernas", "3 × 12", ""),
+    ("aperturas", "Aperturas en máquina o con mancuernas", "3 × 12", ""),
     ("press-militar-maquina", "Press militar en máquina", "4 × 8-10", ""),
     ("elevaciones-laterales", "Elevaciones laterales", "4 × 12-15", ""),
-    (None, "Fondos en paralelas asistidos", "3 × 8-10", ""),
+    ("fondos-asistidos", "Fondos en paralelas asistidos", "3 × 8-10", ""),
     ("triceps-polea", "Extensión de tríceps en polea", "3 × 12-15", ""),
-    (None, "Extensión de tríceps sobre la cabeza", "3 × 12", ""),
+    ("triceps-sobre-cabeza", "Extensión de tríceps sobre la cabeza", "3 × 12", ""),
     ("curl-femoral", "Curl femoral en máquina", "3 × 12", ""),
     ("extension-cuadriceps", "Extensión de cuádriceps", "3 × 12", ""),
 ]
@@ -114,40 +114,40 @@ PLAN_B = [   # tirón
     ("jalon-al-pecho", "Jalón al pecho agarre amplio", "4 × 8-10", ""),
     ("remo-maquina-neutro", "Remo en máquina agarre neutro", "4 × 8-10", ""),
     ("remo-mancuerna", "Remo con mancuerna a una mano", "3 × 10-12", ""),
-    (None, "Pullover en polea alta", "3 × 12", ""),
+    ("pullover-polea", "Pullover en polea alta", "3 × 12", ""),
     ("face-pull", "Face pull en polea", "3 × 15", ""),
-    (None, "Elevaciones posteriores de hombro", "3 × 15", ""),
+    ("elevaciones-posteriores", "Elevaciones posteriores de hombro", "3 × 15", ""),
     ("curl-biceps-inclinado", "Curl de bíceps en banco inclinado", "3 × 10", ""),
     ("curl-martillo", "Curl martillo alterno", "3 × 12", ""),
-    (None, "Curl en banco predicador", "3 × 12", ""),
+    ("curl-predicador", "Curl en banco predicador", "3 × 12", ""),
     ("gemelo-de-pie", "Gemelo de pie", "3 × 15", ""),
 ]
 PLAN_D = [   # upper extra, día de acumular volumen arriba
     ("press-militar-maquina", "Press militar en máquina", "4 × 10-12", ""),
     ("elevaciones-laterales", "Elevaciones laterales", "4 × 15", ""),
-    (None, "Elevaciones posteriores de hombro", "3 × 15", ""),
+    ("elevaciones-posteriores", "Elevaciones posteriores de hombro", "3 × 15", ""),
     ("face-pull", "Face pull alto", "3 × 15", ""),
-    (None, "Encogimientos de trapecio", "3 × 15", ""),
+    ("encogimientos-trapecio", "Encogimientos de trapecio", "3 × 15", ""),
     ("triceps-polea", "Extensión de tríceps en polea", "3 × 15", ""),
     ("curl-martillo", "Curl martillo alterno", "3 × 12", ""),
-    (None, "Curl de muñeca y antebrazo", "3 × 15", ""),
+    ("curl-muneca", "Curl de muñeca y antebrazo", "3 × 15", ""),
     ("gemelo-de-pie", "Gemelo de pie", "4 × 15", ""),
 ]
 PLAN_C = [   # pierna, desde R2
-    (None, "Prensa 45° con pies altos", "4 × 10-12", ""),
-    (None, "Peso muerto rumano con mancuernas", "4 × 8-10", ""),
-    (None, "Split squat corto", "3 × 8 / lado", ""),
+    ("prensa-pies-altos", "Prensa 45° con pies altos", "4 × 10-12", ""),
+    ("peso-muerto-rumano", "Peso muerto rumano con mancuernas", "4 × 8-10", ""),
+    ("split-squat", "Split squat corto", "3 × 8 / lado", ""),
     ("curl-femoral", "Curl femoral en máquina", "3 × 12", ""),
-    (None, "Hip thrust", "3 × 12", ""),
+    ("hip-thrust", "Hip thrust", "3 × 12", ""),
     ("gemelo-de-pie", "Gemelo de pie", "4 × 15", ""),
     ("pallof-press", "Pallof press", "3 × 12 / lado", ""),
 ]
 PLAN_C_POT = [   # pierna con potencia, desde R4
-    (None, "Prensa 45° explosiva en la subida", "4 × 6", ""),
-    (None, "Peso muerto rumano", "4 × 6-8", ""),
-    (None, "Step-up alto con impulso", "3 × 8 / lado", ""),
-    (None, "Nordic hamstring asistido", "3 × 5", ""),
-    (None, "Hip thrust pesado", "4 × 8", ""),
+    ("prensa-pies-altos", "Prensa 45° explosiva en la subida", "4 × 6", ""),
+    ("peso-muerto-rumano", "Peso muerto rumano", "4 × 6-8", ""),
+    ("step-up-alto", "Step-up alto con impulso", "3 × 8 / lado", ""),
+    ("nordic-hamstring", "Nordic hamstring asistido", "3 × 5", ""),
+    ("hip-thrust", "Hip thrust pesado", "4 × 8", ""),
     ("gemelo-de-pie", "Gemelo de pie", "4 × 12", ""),
 ]
 
@@ -194,12 +194,123 @@ FISIO_VEL = [("Antes de velocidad, solo activación",
               "Que te palpe la inserción del recto abdominal después de un día de golpeo.")]
 
 
+
+# ── core: tres niveles segun el bloque ───────────────────────────────
+CORE_BASE = [        # R1: nada que cargue la insercion
+    ("brace-respiracion", "Brace con respiración 360°", "3 × 8", ""),
+    ("bicho-muerto-cruzado", "Dead bug isométrico con presión", "5 × 10 s", "SEGURO"),
+    ("bird-dog", "Bird dog", "3 × 10 / lado", ""),
+    ("plancha-lateral", "Plancha lateral corta", "3 × 25 s / lado", ""),
+    ("plancha-frontal", "Plancha frontal", "3 × 25 s", ""),
+]
+CORE_MEDIO = [       # R2 y R3
+    ("dead-bug", "Dead bug lento", "3 × 8 / lado", ""),
+    ("dead-bug-banda", "Dead bug con banda", "3 × 8 / lado", "NUEVO"),
+    ("plancha-hombro", "Plancha con toque de hombro", "3 × 8 / lado", ""),
+    ("plancha-lateral-pie", "Plancha lateral con piernas estiradas", "3 × 30 s / lado", ""),
+    ("pallof-rotacion", "Pallof de rodillas", "3 × 10 / lado", ""),
+    ("elevacion-piernas", "Bajada de piernas controlada", "3 × 8", ""),
+]
+CORE_FUERTE = [      # R4 y R5
+    ("hollow-hold", "Hollow hold", "3 × 25 s", ""),
+    ("rueda-abdominal", "Rueda abdominal de rodillas", "3 × 6", "EXIGENTE"),
+    ("elevacion-piernas", "Bajada de piernas controlada", "3 × 10", ""),
+    ("plancha-hombro", "Plancha con toque de hombro", "3 × 10 / lado", ""),
+    ("pallof-rotacion", "Pallof de rodillas", "3 × 12 / lado", ""),
+]
+
+# ── aductor y pubis: progresion por bloque ───────────────────────────
+PUBIS_R1 = [
+    ("squeeze-45", "Squeeze a 45 grados", "5 × 30 s", "CLAVE"),
+    ("puente-una-pierna", "Puente a una pierna", "3 × 10 / lado", ""),
+    ("adductor-rockback-banda", "Rockback con banda", "2 × 10 / lado", ""),
+]
+PUBIS_R2 = [
+    ("squeeze-45", "Squeeze a 45 grados", "5 × 40 s", "CLAVE"),
+    ("squeeze-90", "Squeeze a 90 grados", "4 × 30 s", "NUEVO"),
+    ("copenhagen-corto", "Copenhagen corto", "3 × 8 / lado", ""),
+    ("aductor-maquina", "Aductor en máquina", "3 × 12", "NUEVO"),
+    ("marcha-puente", "Marcha en puente", "3 × 8 / lado", ""),
+]
+PUBIS_R3 = [
+    ("squeeze-90", "Squeeze a 90 grados", "4 × 40 s", ""),
+    ("squeeze-piernas-rectas", "Squeeze con piernas rectas", "4 × 30 s", "NUEVO"),
+    ("copenhagen-largo", "Copenhagen largo", "3 × 6 / lado", ""),
+    ("aductor-excentrico", "Aductor excéntrico con banda", "3 × 8 / lado", ""),
+    ("deslizamiento-lateral", "Deslizamiento lateral con disco", "3 × 8 / lado", "NUEVO"),
+]
+PUBIS_MANT = [
+    ("squeeze-piernas-rectas", "Squeeze con piernas rectas", "3 × 40 s", ""),
+    ("copenhagen-largo", "Copenhagen largo", "3 × 8 / lado", ""),
+    ("aductor-maquina", "Aductor en máquina", "3 × 15", ""),
+    ("deslizamiento-lateral", "Deslizamiento lateral con disco", "3 × 10 / lado", ""),
+]
+
+# ── estiramientos: lo que tira de la pelvis, no el aductor ───────────
+ESTIRA_BASE = [
+    ("estiramiento-gato-camello", "Gato y camello", "10 ciclos", ""),
+    ("estiramiento-psoas", "Estiramiento de psoas", "2 × 30 s / lado", "EL MÁS IMPORTANTE"),
+    ("estiramiento-piramidal", "Estiramiento de piramidal", "30 s / lado", ""),
+    ("estiramiento-cuadrado-lumbar", "Estiramiento de cuadrado lumbar", "30 s / lado", ""),
+    ("respiracion-90-90", "Respiración 90/90", "5 min", ""),
+]
+ESTIRA_COMPLETO = [
+    ("estiramiento-gato-camello", "Gato y camello", "10 ciclos", ""),
+    ("estiramiento-psoas", "Estiramiento de psoas", "2 × 30 s / lado", "EL MÁS IMPORTANTE"),
+    ("estiramiento-recto-femoral", "Estiramiento de recto femoral", "30 s / lado", ""),
+    ("estiramiento-isquios", "Estiramiento de isquios", "30 s / lado", ""),
+    ("estiramiento-piramidal", "Estiramiento de piramidal", "30 s / lado", ""),
+    ("estiramiento-cuadrado-lumbar", "Estiramiento de cuadrado lumbar", "30 s / lado", ""),
+    ("estiramiento-aductor-suave", "Estiramiento suave de aductor", "2 × 30 s", "SOLO SI DOLOR 0-2"),
+    ("respiracion-90-90", "Respiración 90/90", "5 min", ""),
+]
+
+# ── futbol: tecnica por bloque ───────────────────────────────────────
+FUTBOL_R3A = [
+    ("control-orientado", "Control orientado", "10 min", ""),
+    ("pase-interior", "Pase con el interior", "10 min", ""),
+    ("conduccion-conos", "Conducción entre conos", "10 min", ""),
+]
+FUTBOL_R3B = [
+    ("control-orientado", "Control orientado", "8 min", ""),
+    ("pase-interior", "Pase con el interior", "8 min", ""),
+    ("pase-largo", "Pase largo raso", "12-15 golpeos al 50-60 %", "NUEVO"),
+]
+FUTBOL_R4A = [
+    ("conduccion-conos", "Conducción rápida entre conos", "10 min", ""),
+    ("pase-largo", "Pase largo", "12 golpeos al 70 %", ""),
+    ("golpeo-empeine", "Golpeo con empeine", "12-15 al 70-80 %", "NUEVO"),
+]
+FUTBOL_R4B = [
+    ("falta-balon-parado", "Falta con balón parado", "6-8 al 70-80 %", "TECHO 16"),
+    ("centro-banda", "Centro desde banda", "6-8 centros", "NUEVO"),
+    ("remate-cabeza", "Remate de cabeza", "6 remates", "NUEVO"),
+]
+FUTBOL_R5 = [
+    ("falta-balon-parado", "Falta con balón parado", "10-12 libres", "TECHO 12"),
+    ("centro-banda", "Córner y centro", "8-10", ""),
+    ("golpeo-empeine", "Finalización", "10 disparos al 100 %", ""),
+]
+
+
 def sesion(titulo, regla, secciones):
     return dict(titulo=titulo, regla=regla, secciones=secciones)
 
 
-def sec(n, titulo, meta, tipo, items):
-    return dict(n=n, titulo=titulo, meta=meta, tipo=tipo, items=items)
+def sec(n, titulo, meta, tipo, items, fotos=None):
+    """fotos: slugs que se pintan como tira de miniaturas encima del contenido.
+    Sirve para las secciones de texto (piscina, aparatos, fisio, comida), que
+    tenian foto en el manual pero no la ensenaban en la sesion del dia."""
+    return dict(n=n, titulo=titulo, meta=meta, tipo=tipo, items=items,
+                fotos=fotos or [])
+
+
+FOTOS_PISCINA = ["nado-espalda", "aqua-running", "marching-agua", "flotacion-pasiva"]
+FOTOS_PISTOLA = ["pistola-cuadriceps", "pistola-aductor"]
+FOTOS_EMS = ["ems-aductores", "ems-gluteos"]
+FOTOS_FISIO = ["fisio-gluteo-medio"]
+FOTOS_CIERRE = ["movilidad-nocturna", "masaje-espalda-maquina"]
+FOTOS_COMIDA = ["plato-modelo", "post-entreno"]
 
 
 MICRO = {}
@@ -214,10 +325,10 @@ APERTURA = sesion(
     [sec("01", "Línea base", "10 min · antes de nada", "test", []),
      sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
      sec("03", "Gimnasio · Plan A empuje", "45 min · RIR 3", "tabla", PLAN_A[:7]),
-     sec("04", "Piscina", "25 min", "lista", PISCINA_25),
+     sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
      sec("05", "Fisioterapia · valoración", "la sesión más importante del bloque",
-         "pasos", FISIO_VAL),
-     sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC)])
+         "pasos", FISIO_VAL, FOTOS_FISIO),
+     sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC, FOTOS_EMS)])
 
 # ══ R1 · descarga y control ═════════════════════════════════════════
 MICRO["R1"] = {
@@ -225,39 +336,39 @@ MICRO["R1"] = {
            "Vuelves de parón: RIR 3 y cargas al 60-70 %. La calidad manda sobre el peso.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
             sec("03", "Gimnasio · Plan A empuje", "50 min · RIR 3", "tabla", PLAN_A),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25),
-            sec("05", "Fisioterapia", "sesión de hoy", "pasos", FISIO_VAL),
-            sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC)]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("05", "Fisioterapia", "sesión de hoy", "pasos", FISIO_VAL, FOTOS_FISIO),
+            sec("06", "Electroestimulación", "20 min · tarde", "lista", EMS_REC, FOTOS_EMS)]),
  1: sesion("Tirón + descarga con pistola",
            "El número de esta mañana comparado con el de ayer vale más que cualquier serie.",
            [sec("02", "Movilidad y activación", "18 min", "tabla",
                 MOV_BASE + [("dead-bug", "Dead bug lento", "2 × 8 / lado", "")]),
             sec("03", "Gimnasio · Plan B tirón", "50 min · RIR 3", "tabla", PLAN_B),
-            sec("04", "Pistola de masaje", "10 min · post-gym", "lista", PISTOLA),
-            sec("06", "Cierre del día", "10 min", "lista", CIERRE)]),
+            sec("04", "Pistola de masaje", "10 min · post-gym", "lista", PISTOLA, FOTOS_PISTOLA),
+            sec("06", "Cierre del día", "10 min", "lista", CIERRE, FOTOS_CIERRE)]),
  2: sesion("Rehab larga + agua + fisio local",
            "El día grande de la semana. Todo el trabajo específico se concentra hoy.",
            [sec("02", "Rehab de aductor y core", "40 min", "tabla", MOV_LARGA),
-            sec("04", "Piscina", "35 min", "lista", PISCINA_35),
-            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC),
+            sec("04", "Piscina", "35 min", "lista", PISCINA_35, FOTOS_PISCINA),
+            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO),
             sec("06", "EMS y shiatsu", "30 min · tarde", "lista",
-                EMS_REC + ["Shiatsu lumbar y dorsal 15 min."])]),
+                EMS_REC + ["Shiatsu lumbar y dorsal 15 min."], FOTOS_EMS + FOTOS_CIERRE[1:])]),
  3: sesion("Upper extra",
            "Día de acumular volumen arriba: hombro, brazo y trapecio, que no tocan la ingle.",
            [sec("02", "Movilidad y activación", "15 min", "tabla", MOV_CORTA),
             sec("03", "Gimnasio · Plan D upper extra", "45 min · RIR 2-3", "tabla", PLAN_D),
-            sec("04", "Pistola de masaje", "8 min", "lista", PISTOLA)]),
+            sec("04", "Pistola de masaje", "8 min", "lista", PISTOLA, FOTOS_PISTOLA)]),
  4: sesion("Empuje o tirón + agua",
            "Alterna el plan que menos hayas hecho esta semana. Mismo RIR.",
            [sec("02", "Movilidad y activación", "18 min", "tabla", MOV_BASE),
             sec("03", "Gimnasio · Plan A o B", "50 min · RIR 3", "tabla", PLAN_A),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25),
-            sec("05", "Fisioterapia · descarga", "post-gimnasio", "pasos", FISIO_DES),
-            sec("06", "Electroestimulación", "20 min", "lista", EMS_REC)]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("05", "Fisioterapia · descarga", "post-gimnasio", "pasos", FISIO_DES, FOTOS_FISIO),
+            sec("06", "Electroestimulación", "20 min", "lista", EMS_REC, FOTOS_EMS)]),
  5: sesion("Agua larga + brazo",
            "Sesión larga de agua, que es la que más volumen da sin peaje, y brazo al terminar.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
-            sec("04", "Piscina", "40 min", "lista", PISCINA_40),
+            sec("04", "Piscina", "40 min", "lista", PISCINA_40, FOTOS_PISCINA),
             sec("03", "Gimnasio · brazo y hombro", "25 min", "tabla", PLAN_D[:5]),
             sec("06", "Shiatsu completo", "30 min · noche", "lista",
                 ["Cervical, dorsal y lumbar, 30 min.", "Shiatsu de pies.", "Hidratar después."])]),
@@ -274,7 +385,7 @@ MICRO["R2"] = {
            [sec("02", "Movilidad y activación", "18 min", "tabla", MOV_BASE),
             sec("03", "Gimnasio · Plan C pierna", "45 min · RIR 2", "tabla", PLAN_C),
             sec("03b", "Gimnasio · empuje corto", "20 min", "tabla", PLAN_A[:4]),
-            sec("06", "Electroestimulación", "20 min", "lista", EMS_REC)]),
+            sec("06", "Electroestimulación", "20 min", "lista", EMS_REC, FOTOS_EMS)]),
  1: sesion("Tirón + carrera lineal",
            "Primera carrera del reinicio. En línea recta, sin cambios de ritmo y sin acelerones.",
            [sec("02", "Movilidad y activación", "18 min", "tabla", MOV_BASE),
@@ -287,10 +398,10 @@ MICRO["R2"] = {
  2: sesion("Copenhagen + core + agua",
            "Entra el Copenhagen. Empieza corto y solo sube si el día siguiente sale limpio.",
            [sec("02", "Rehab de aductor y core", "35 min", "tabla",
-                MOV_BASE + [(None, "Copenhagen corto", "2 × 6 / lado", "NUEVO"),
-                            (None, "Aductor con banda", "3 × 12 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25),
-            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC)]),
+                MOV_BASE + [("copenhagen-corto", "Copenhagen corto", "2 × 6 / lado", "NUEVO"),
+                            ("aductor-banda", "Aductor con banda", "3 × 12 / lado", "")]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO)]),
  3: sesion("Upper extra + carrera continua",
            "Volumen arriba y carrera cómoda. Sin progresivos todavía.",
            [sec("02", "Movilidad y activación", "15 min", "tabla", MOV_CORTA),
@@ -301,9 +412,9 @@ MICRO["R2"] = {
  4: sesion("Pierna ligera + Copenhagen + agua",
            "Segunda dosis de Copenhagen de la semana, con la pierna en volumen bajo.",
            [sec("02", "Rehab de aductor y core", "30 min", "tabla",
-                MOV_BASE + [(None, "Copenhagen corto", "2 × 8 / lado", "")]),
+                MOV_BASE + [("copenhagen-corto", "Copenhagen corto", "2 × 8 / lado", "")]),
             sec("03", "Gimnasio · Plan C ligero", "30 min · RIR 3", "tabla", PLAN_C[:4]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25)]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA)]),
  5: sesion("Carrera con progresivos + tirón corto",
            "Primer acercamiento a la velocidad: progresivos suaves, sin llegar al 80 %.",
            [sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
@@ -312,7 +423,7 @@ MICRO["R2"] = {
                  "6 progresivos de 60 m: se entra suave y se acaba al 70 %.",
                  "Andando la vuelta entera. Si la ingle avisa, se corta el bloque."]),
             sec("03", "Gimnasio · tirón corto", "25 min", "tabla", PLAN_B[:5]),
-            sec("06", "Pistola y shiatsu", "20 min", "lista", PISTOLA)]),
+            sec("06", "Pistola y shiatsu", "20 min", "lista", PISTOLA, FOTOS_PISTOLA)]),
  6: sesion("Descanso y test semanal",
            "Descanso real y test. Si la puerta del bloque está cerca, hoy se comprueban los criterios.",
            [sec("02", "Movilidad suave", "15 min", "tabla", MOV_CORTA),
@@ -327,8 +438,8 @@ MICRO["R3"] = {
             sec("03", "Gimnasio · Plan C pierna", "45 min · RIR 2", "tabla", PLAN_C),
             sec("03b", "Gimnasio · empuje", "25 min", "tabla", PLAN_A[:5]),
             sec("08", "Aductor específico", "15 min", "tabla",
-                [(None, "Copenhagen largo", "3 × 6 / lado", "NUEVO"),
-                 (None, "Aductor excéntrico con banda", "3 × 8 / lado", "")])]),
+                [("copenhagen-largo", "Copenhagen largo", "3 × 6 / lado", "NUEVO"),
+                 ("aductor-excentrico", "Aductor excéntrico con banda", "3 × 8 / lado", "")])]),
  1: sesion("Balón: control y pase",
            "Vuelve el balón, y vuelve solo como técnica. El golpeo empieza raso y corto.",
            [sec("02", "Movilidad y activación", "15 min", "tabla", MOV_CORTA),
@@ -342,9 +453,9 @@ MICRO["R3"] = {
  2: sesion("Aductor y core + agua",
            "Día de mantenimiento específico entre los dos días de campo.",
            [sec("02", "Rehab de aductor y core", "35 min", "tabla",
-                MOV_LARGA + [(None, "Copenhagen largo", "3 × 6 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25),
-            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC)]),
+                MOV_LARGA + [("copenhagen-largo", "Copenhagen largo", "3 × 6 / lado", "")]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("05", "Fisioterapia · zona local", "una de las dos de la semana", "pasos", FISIO_LOC, FOTOS_FISIO)]),
  3: sesion("Aceleración y frenada",
            "Primera velocidad del reinicio. Se entra progresivo y se frena en tres o cuatro pasos.",
            [sec("02", "Calentamiento de campo", "20 min", "tabla", CALIENTA_CAMPO),
@@ -354,7 +465,7 @@ MICRO["R3"] = {
                  "6 frenadas desde 15 m, parando en 3-4 pasos, nunca en seco.",
                  "Cambios de dirección de 45°, ocho por lado.",
                  "Andando la vuelta siempre. Recuperación completa entre series."]),
-            sec("05", "Fisioterapia", "descarga de aductor y psoas", "pasos", FISIO_VEL)]),
+            sec("05", "Fisioterapia", "descarga de aductor y psoas", "pasos", FISIO_VEL, FOTOS_FISIO)]),
  4: sesion("Upper extra + golpeo raso",
            "Volumen arriba y segunda dosis de golpeo, todavía raso y a media distancia.",
            [sec("02", "Movilidad y activación", "15 min", "tabla", MOV_CORTA),
@@ -397,13 +508,13 @@ MICRO["R4"] = {
                  "3-4 × 50-60 m de velocidad lanzada, sin salida explosiva.",
                  "Recuperación de 2-3 min entre series. Calidad, no cantidad.",
                  "Habilidad al final: conducción rápida, pared y primer toque, 10 min."]),
-            sec("05", "Fisioterapia", "post-velocidad", "pasos", FISIO_VEL)]),
+            sec("05", "Fisioterapia", "post-velocidad", "pasos", FISIO_VEL, FOTOS_FISIO)]),
  2: sesion("Aductor y core + agua",
            "Mantenimiento del trabajo específico, que no se abandona aunque el campo mande.",
            [sec("02", "Rehab de aductor y core", "30 min", "tabla",
-                MOV_LARGA + [(None, "Copenhagen largo", "3 × 8 / lado", "")]),
-            sec("04", "Piscina", "25 min", "lista", PISCINA_25),
-            sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES)]),
+                MOV_LARGA + [("copenhagen-largo", "Copenhagen largo", "3 × 8 / lado", "")]),
+            sec("04", "Piscina", "25 min", "lista", PISCINA_25, FOTOS_PISCINA),
+            sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES, FOTOS_FISIO)]),
  3: sesion("COD cerrado + golpeo alto",
            "Cambios de dirección cerrados y el primer golpeo con empeine alto del proceso.",
            [sec("02", "Calentamiento de campo", "22 min", "tabla", CALIENTA_CAMPO),
@@ -413,7 +524,7 @@ MICRO["R4"] = {
                  "Pliometría reactiva baja, 3 × 8 saltos laterales.",
                  "Golpeo con empeine al 70-80 %, 12-15 golpeos, balón en movimiento.",
                  "Todavía NO hay balón parado: eso es la semana que viene."]),
-            sec("06", "Pistola y EMS", "20 min · noche", "lista", PISTOLA)]),
+            sec("06", "Pistola y EMS", "20 min · noche", "lista", PISTOLA, FOTOS_PISTOLA)]),
  4: sesion("Upper extra + balón parado",
            "Entra lo tuyo: faltas y córners. En series cortas y contadas, con el día siguiente como juez.",
            [sec("02", "Calentamiento de campo", "22 min", "tabla", CALIENTA_CAMPO),
@@ -455,9 +566,9 @@ MICRO["R5"] = {
  2: sesion("Aductor y core",
            "Mantenimiento específico. Copenhagen una o dos veces por semana, para siempre.",
            [sec("02", "Rehab de aductor y core", "25 min", "tabla",
-                MOV_BASE + [(None, "Copenhagen largo", "3 × 8 / lado", "")]),
-            sec("04", "Piscina", "20 min", "lista", PISCINA_25[:3]),
-            sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES)]),
+                MOV_BASE + [("copenhagen-largo", "Copenhagen largo", "3 × 8 / lado", "")]),
+            sec("04", "Piscina", "20 min", "lista", PISCINA_25[:3], FOTOS_PISCINA),
+            sec("05", "Fisioterapia", "descarga", "pasos", FISIO_DES, FOTOS_FISIO)]),
  3: sesion("Golpeo y balón parado",
            "Faltas y córners a intensidad libre, pero con las series contadas. Es tu gesto y es el de más riesgo.",
            [sec("02", "Calentamiento de campo", "22 min", "tabla", CALIENTA_CAMPO),
@@ -466,7 +577,7 @@ MICRO["R5"] = {
                  "8-10 córners a las dos alturas.",
                  "Finalización al 100 %, 10 disparos.",
                  "Techo de la sesión: 12 faltas. Más no da rendimiento y sí riesgo."]),
-            sec("05", "Fisioterapia", "post-golpeo", "pasos", FISIO_VEL)]),
+            sec("05", "Fisioterapia", "post-golpeo", "pasos", FISIO_VEL, FOTOS_FISIO)]),
  4: sesion("Activación previa al partido",
            "Día previo. Activar sin cansar y llegar con las piernas frescas.",
            [sec("02", "Movilidad y activación", "18 min", "tabla", MOV_CORTA),
@@ -525,3 +636,70 @@ ISO_MANT = [80] * 21
 
 for _b in BLOQUES:
     _b["iso"] = ISO if _b["id"] == "R1" else ISO_MANT
+
+
+
+# ── reparto semanal: mitades que rotan, sin dias de tres horas ───────
+# core y pubis NUNCA caen el mismo dia. Los estiramientos completos van en los
+# dos dias ligeros (jueves y domingo) y el resto de dias llevan la version corta.
+def _mitades(lista):
+    """Parte una rutina en dos mitades alternas, sin perder el ejercicio clave."""
+    clave = [x for x in lista if x[3]]
+    resto = [x for x in lista if not x[3]]
+    a = clave + resto[0::2]
+    b = clave + resto[1::2]
+    return a, b
+
+
+CORE_POR = {"R1": CORE_BASE, "R2": CORE_MEDIO, "R3": CORE_MEDIO,
+            "R4": CORE_FUERTE, "R5": CORE_FUERTE}
+PUBIS_POR = {"R1": PUBIS_R1, "R2": PUBIS_R2, "R3": PUBIS_R3,
+             "R4": PUBIS_MANT, "R5": PUBIS_MANT}
+ESTIRA_POR = {"R1": ESTIRA_BASE, "R2": ESTIRA_COMPLETO, "R3": ESTIRA_COMPLETO,
+              "R4": ESTIRA_COMPLETO, "R5": ESTIRA_COMPLETO}
+FUTBOL_POR = {"R3": {1: FUTBOL_R3A, 4: FUTBOL_R3B, 5: FUTBOL_R3A},
+              "R4": {1: FUTBOL_R4A, 4: FUTBOL_R4B, 5: FUTBOL_R4A},
+              "R5": {1: FUTBOL_R5, 3: FUTBOL_R5}}
+
+ESTIRA_CORTO = {k: [x for x in v if x[3]] + [x for x in v if not x[3]][:3]
+                for k, v in ESTIRA_POR.items()}
+
+# dia de la semana -> que rutina extra lleva
+#   0 lunes, 1 martes, 2 miercoles, 3 jueves, 4 viernes, 5 sabado, 6 domingo
+PLAN_EXTRA = {
+    0: ("core", "a"),      # tras el gimnasio pesado
+    1: ("pubis", "a"),
+    2: ("pubis", "b"),     # el dia de rehab larga, pubis completo
+    3: ("core", "b"),      # dia ligero
+    4: ("pubis", "a"),
+    5: ("core", "a"),
+    6: (None, None),       # descanso: solo estiramientos largos
+}
+DIAS_ESTIRA_LARGO = (3, 6)
+
+for _bid, _dias in MICRO.items():
+    _ca, _cb = _mitades(CORE_POR[_bid])
+    _pa, _pb = _mitades(PUBIS_POR[_bid])
+    for _d, _ses in _dias.items():
+        _que, _mitad = PLAN_EXTRA[_d]
+        if _que == "core":
+            _ses["secciones"].append(
+                sec("10", "Core y abdominales", "10 min · puede ir por la noche",
+                    "tabla", _ca if _mitad == "a" else _cb))
+        elif _que == "pubis":
+            _lista = _pa if _mitad == "a" else PUBIS_POR[_bid]
+            _ses["secciones"].append(
+                sec("12", "Aductor y pubis", "12 min · el trabajo que cura",
+                    "tabla", _lista))
+        if _bid in FUTBOL_POR and _d in FUTBOL_POR[_bid]:
+            _ses["secciones"].append(
+                sec("07b", "Fútbol · técnica", "según el escalón del bloque",
+                    "tabla", FUTBOL_POR[_bid][_d]))
+        _largo = _d in DIAS_ESTIRA_LARGO
+        _ses["secciones"].append(
+            sec("11", "Estiramientos",
+                ("15 min · sesión larga" if _largo else "8 min · al terminar o por la noche"),
+                "tabla", ESTIRA_POR[_bid] if _largo else ESTIRA_CORTO[_bid]))
+
+APERTURA["secciones"].append(
+    sec("11", "Estiramientos", "12 min · al terminar", "tabla", ESTIRA_BASE))
