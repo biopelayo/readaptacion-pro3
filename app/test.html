@@ -591,6 +591,14 @@ document.getElementById("fr").onload = function () {
     return /^Día \d+ de \d+$/.test(txt) ? true : "formato raro: " + txt;
   });
 
+  t("una pestana abierta desde hace dias tambien vuelve a hoy", () => {
+    /* la marca de sesion guarda el dia, no un 1: si el dia cambio, el hash
+       viejo deja de mandar aunque la pestana lleve una semana abierta */
+    let g;
+    try { g = w.sessionStorage.getItem("readapt_viva"); } catch (e) { return "sin sessionStorage"; }
+    return g === T.iso(new Date()) ? true : "la marca guarda " + g;
+  });
+
   const res = document.getElementById("res");
   res.className = ko === 0 ? "good" : "bad";
   res.textContent = ko === 0

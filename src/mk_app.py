@@ -188,8 +188,9 @@ const hash = location.hash.replace("#", "").split(":");
 const MISMA_SESION = (() => {
   try {
     const v = sessionStorage.getItem("readapt_viva");
-    sessionStorage.setItem("readapt_viva", "1");
-    return v === "1";
+    sessionStorage.setItem("readapt_viva", HOY0);
+    return v === HOY0;      /* misma sesion Y mismo dia: una pestana abierta
+                               desde hace una semana tambien vuelve a hoy */
   } catch (e) { return false; }
 })();
 let VISTA = VISTAS.indexOf(hash[0]) >= 0 ? hash[0] : "hoy";
