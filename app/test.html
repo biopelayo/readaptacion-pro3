@@ -505,6 +505,92 @@ document.getElementById("fr").onload = function () {
     return visto.indexOf("Aprieta al") < 0 ? true : "sale el aviso del aductor: " + visto;
   });
 
+  t("la semana arranca en la de hoy, no en una fecha vieja", () => {
+    /* el fallo real: un acceso directo guardado con #semana:2026-08-17 dejaba
+       la app anclada a ese dia. La fecha del hash solo vale dentro de la sesion */
+    if (T.FECHA_INICIAL !== T.iso(new Date()))
+      return "arranco en " + T.FECHA_INICIAL;
+    return true;
+  });
+
+  t("la vista semana muestra la semana de la fecha actual", () => {
+    T.setFecha(T.iso(new Date()));
+    T.setVista("semana");
+    const html = w.document.getElementById("app").innerHTML;
+    const hoy = new Date();
+    const ok = html.indexOf("· hoy") > 0;
+    T.setVista("hoy");
+    return ok ? true : "no marca el dia de hoy en la rejilla";
+  });
+
+  t("se puede navegar a la semana anterior y volver a hoy", () => {
+    T.setVista("semana");
+    const antes = T.FECHA_ACTUAL();
+    const b = w.document.querySelector('[data-sem="-7"]');
+    if (!b) return "no hay boton de semana anterior";
+    b.click();
+    const movida = T.FECHA_ACTUAL();
+    if (T.dias(movida, antes) !== 7) return "no retrocedio 7 dias";
+    const volver = w.document.querySelector(".btn.entrar[data-ir]");
+    if (!volver) return "no aparece el boton de volver a hoy";
+    volver.click();
+    const fin = T.FECHA_ACTUAL();
+    const sigueEnSemana = w.document.getElementById("app").innerHTML.indexOf("La <span") > 0;
+    T.setVista("hoy");
+    if (fin !== T.iso(new Date())) return "no volvio a hoy";
+    return sigueEnSemana ? true : "el boton salio de la vista semana";
+  });
+
+  t("marcar una tarea guarda la hora sola", () => {
+    T.setFecha(T.iso(new Date()));
+    T.setVista("hoy");
+    const c = w.document.querySelector("[data-hecho]");
+    if (!c) return "no hay tareas";
+    const id = c.dataset.hecho;
+    c.click();
+    const r = T.S.reg[T.iso(new Date())] || {};
+    const h = (r.horas || {})[id];
+    w.document.querySelector('[data-hecho="' + id + '"]').click();
+    return /^\d\d:\d\d$/.test(h || "") ? true : "no se guardo la hora: " + h;
+  });
+
+  t("cada seccion de trabajo pide molestia y esfuerzo", () => {
+    T.setVista("hoy");
+    const n = w.document.querySelectorAll(".pie").length;
+    const tablas = T.sesionDe(T.iso(new Date())).secs.filter(s => s.tipo === "tabla").length;
+    return n === tablas ? true : n + " pies para " + tablas + " secciones";
+  });
+
+  t("la molestia de una seccion se guarda y se quita al repetir el toque", () => {
+    const b = w.document.querySelector('[data-sec]');
+    if (!b) return "no hay chips";
+    const [n, clave, v] = b.dataset.sec.split(":");
+    b.click();
+    const r1 = ((T.S.reg[T.iso(new Date())] || {}).sec || {})[n] || {};
+    if (r1[clave] !== +v) return "no guardo";
+    w.document.querySelector('[data-sec="' + b.dataset.sec + '"]').click();
+    const r2 = ((T.S.reg[T.iso(new Date())] || {}).sec || {})[n] || {};
+    return r2[clave] === null ? true : "no se pudo deshacer";
+  });
+
+  t("el CSV lleva las columnas nuevas", () => {
+    const c = T.cabeceraCSV ? T.cabeceraCSV() : null;
+    if (!c) return "no expuesta";
+    const faltan = ["sueno_h", "peso_kg", "inicio", "fin", "duracion_min",
+                    "molestia_por_actividad", "esfuerzo_por_actividad", "series_reales"]
+      .filter(x => c.indexOf(x) < 0);
+    return faltan.length ? "faltan: " + faltan.join(", ") : true;
+  });
+
+  t("la cabecera dice cuantos dias tiene el bloque, no undefined", () => {
+    T.setVista("hoy");
+    const p = w.document.querySelector(".top .pill.solid");
+    if (!p) return "no hay pildora";
+    const txt = p.textContent;
+    if (txt.indexOf("undefined") >= 0 || txt.indexOf("NaN") >= 0) return txt;
+    return /^Día \d+ de \d+$/.test(txt) ? true : "formato raro: " + txt;
+  });
+
   const res = document.getElementById("res");
   res.className = ko === 0 ? "good" : "bad";
   res.textContent = ko === 0

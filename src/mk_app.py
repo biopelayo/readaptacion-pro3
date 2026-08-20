@@ -182,8 +182,18 @@ function sesionDe(fecha) {
 const esc = t => (t + "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const VISTAS = ["hoy", "semana", "manual", "datos"];
 const hash = location.hash.replace("#", "").split(":");
+/* El hash conserva la vista al recargar, pero al ABRIR la app en frio se
+   empieza siempre en el dia de hoy. Sin esto, un acceso directo guardado
+   con una fecha vieja dejaba la app anclada a ese dia para siempre. */
+const MISMA_SESION = (() => {
+  try {
+    const v = sessionStorage.getItem("readapt_viva");
+    sessionStorage.setItem("readapt_viva", "1");
+    return v === "1";
+  } catch (e) { return false; }
+})();
 let VISTA = VISTAS.indexOf(hash[0]) >= 0 ? hash[0] : "hoy";
-let FECHA = /^\\d{4}-\\d{2}-\\d{2}$/.test(hash[1] || "") ? hash[1] : HOY0;
+let FECHA = (MISMA_SESION && /^\\d{4}-\\d{2}-\\d{2}$/.test(hash[1] || "")) ? hash[1] : HOY0;
 
 function setReg(f, k, v) {
   S.reg[f] = S.reg[f] || {};
@@ -451,6 +461,93 @@ function pintaEntreno() {
     '</div></div>';
 }
 
+/* Pie de cada seccion de trabajo. Dos toques que valen mas que el dolor
+   global de la noche, porque dicen QUE actividad molesta: el gimnasio, el
+   agua o el campo. La escala es corta a proposito, para que se rellene. */
+const MOLESTIA = ["nada", "poco", "bastante", "mucho"];
+const ESFUERZO = ["suave", "justo", "fuerte"];
+function pieSeccion(n, titulo) {
+  const r = S.reg[FECHA] || {};
+  const s = (r.sec || {})[n] || {};
+  const chips = (clave, ops, val) => ops.map((x, k) =>
+    '<button class="chip' + (val === k ? ' on' : '') + '" data-sec="' + n + ':' + clave + ':' + k +
+    '">' + x + '</button>').join("");
+  return '<div class="pie">' +
+    '<div class="pie-r"><span>Molestia</span><div class="chips">' +
+    chips("dolor", MOLESTIA, s.dolor) + '</div></div>' +
+    '<div class="pie-r"><span>Esfuerzo</span><div class="chips">' +
+    chips("rpe", ESFUERZO, s.rpe) + '</div></div></div>';
+}
+
+/* Cuanto duro de verdad una seccion, segun las horas que se fueron guardando
+   solas al marcar sus tareas. */
+function duracionReal(n, ids) {
+  const r = S.reg[FECHA] || {}, h = r.horas || {};
+  const t = ids.map(i => h[i]).filter(Boolean).sort();
+  if (t.length < 2) return "";
+  const min = x => (+x.slice(0, 2)) * 60 + (+x.slice(3));
+  const d = min(t[t.length - 1]) - min(t[0]);
+  return d > 0 && d < 300 ? t[0] + " a " + t[t.length - 1] + " · " + d + " min" : "";
+}
+
+/* Que actividad molesta, con los datos que se van dejando en cada seccion.
+   Es la pregunta que en pubalgia decide si el plan avanza o recorta, y hasta
+   ahora la app solo guardaba un dolor global por sesion. */
+function porActividad() {
+  const acc = {};
+  Object.keys(S.reg).forEach(f => {
+    const r = S.reg[f];
+    if (!r.sec) return;
+    let nom;
+    try { nom = {}; sesionDe(f).secs.forEach(x => { nom[x.n] = x.titulo; }); }
+    catch (e) { return; }
+    Object.keys(r.sec).forEach(n => {
+      const d = r.sec[n].dolor;
+      if (d === undefined || d === null) return;
+      const k = nom[n] || n;
+      acc[k] = acc[k] || {n: 0, suma: 0, peor: 0};
+      acc[k].n++; acc[k].suma += d; acc[k].peor = Math.max(acc[k].peor, d);
+    });
+  });
+  const ks = Object.keys(acc).sort((a, b) => acc[b].suma / acc[b].n - acc[a].suma / acc[a].n);
+  if (!ks.length)
+    return '<div class="card"><div class="ch"><span class="cn">◇</span>' +
+      '<h2 class="ct">Qué actividad molesta</h2></div>' +
+      '<div class="note">Al pie de cada bloque de la sesión hay dos toques: molestia y ' +
+      'esfuerzo. En cuanto haya unos días marcados, aquí sale el ranking de qué te sienta ' +
+      'peor, que es lo que decide qué recortar.</div></div>';
+  return '<div class="card"><div class="ch"><span class="cn">◇</span>' +
+    '<h2 class="ct">Qué actividad molesta</h2>' +
+    '<span class="cm">' + ks.length + ' actividades</span></div>' +
+    '<table class="mini"><tr><th>Actividad</th><th>Media</th><th>Peor</th><th>Días</th></tr>' +
+    ks.map(k => {
+      const a = acc[k], m = a.suma / a.n;
+      return '<tr><td>' + esc(k) + '</td><td>' + MOLESTIA[Math.round(m)] +
+        '</td><td>' + MOLESTIA[a.peor] + '</td><td>' + a.n + '</td></tr>';
+    }).join("") + '</table>' +
+    '<div class="note">La media manda sobre un día suelto. Si una actividad sale en ' +
+    '<strong>bastante</strong> dos semanas seguidas, se recorta esa y no la sesión entera.</div></div>';
+}
+
+/* Cuanto dura de verdad cada sesion, frente a lo que dice el plan. */
+function tiemposReales() {
+  const fs = Object.keys(S.reg).filter(f => Object.keys(S.reg[f].horas || {}).length > 1).sort();
+  if (!fs.length) return "";
+  const min = x => (+x.slice(0, 2)) * 60 + (+x.slice(3));
+  const filas = fs.slice(-7).reverse().map(f => {
+    const hs = Object.keys(S.reg[f].horas).map(k => S.reg[f].horas[k]).sort();
+    const d = min(hs[hs.length - 1]) - min(hs[0]);
+    return '<tr><td>' + f.slice(8) + "/" + f.slice(5, 7) + '</td><td>' + hs[0] +
+      '</td><td>' + hs[hs.length - 1] + '</td><td>' + (d > 0 ? d + " min" : "") + '</td></tr>';
+  }).join("");
+  return '<div class="card"><div class="ch"><span class="cn">◷</span>' +
+    '<h2 class="ct">A qué hora entrenas</h2><span class="cm">últimos 7</span></div>' +
+    '<table class="mini"><tr><th>Día</th><th>Empiezas</th><th>Acabas</th><th>Dura</th></tr>' +
+    filas + '</table>' +
+    '<div class="note">Se apunta solo al marcar cada tarea. Sirve para ver si la sesión ' +
+    'se te está alargando y para comparar el dolor de los días que entrenas tarde.</div></div>';
+}
+
 /* -- pantalla de arranque: el anillo de los cinco bloques ──── */
 function splashHTML() {
   const i = bloqueDe(HOY0);
@@ -584,7 +681,7 @@ function vistaHoy() {
 
   h += '<div class="top">' + anilloMini(FECHA) +
        '<span class="pill">' + i.b.id + ' · ' + esc(i.b.nombre) + '</span>' +
-       '<span class="pill solid">Día ' + i.n + ' de ' + i.b.dur + '</span></div>';
+       '<span class="pill solid">Día ' + i.n + ' de ' + i.dur + '</span></div>';
 
   h += '<div class="daynav">' +
        '<button data-nav="-1" aria-label="Día anterior"><svg viewBox="0 0 24 24" fill="none" ' +
@@ -620,7 +717,12 @@ function vistaHoy() {
   h += '<div class="card"><div class="ch"><span class="cn">01</span>' +
        '<h2 class="ct">Dolor de esta mañana</h2></div>' +
        '<p style="margin:0 0 8px;font-size:13.5px;color:var(--ink-3)">Antes de levantarte de la cama. ' +
-       'Es lo que decide la sesión de hoy.</p>' + escala(FECHA, "manana", r.manana);
+       'Es lo que decide la sesión de hoy.</p>' + escala(FECHA, "manana", r.manana) +
+       '<div class="dosn">' +
+       '<label><span>Sueño</span><input type="text" inputmode="decimal" data-txt="sueno" value="' +
+       esc(r.sueno || "") + '" placeholder="h"></label>' +
+       '<label><span>Peso</span><input type="text" inputmode="decimal" data-txt="peso" value="' +
+       esc(r.peso || "") + '" placeholder="kg"></label></div>';
   if (s.dol !== null) {
     if (s.recorte === "rojo")
       h += '<div class="note warn"><strong>Sesión suspendida.</strong> Hoy solo movilidad muy suave. ' +
@@ -664,8 +766,10 @@ function vistaHoy() {
         }
         if (leeDosis(it[2])) {                         /* cronometro de la posta */
           extra += '<div class="kg"><button class="btn ghost mini" data-posta="' +
-                   (idxPosta[sec.n + "_" + k] || 0) + '">Cronómetro ' + esc(it[2]) +
-                   '</button></div>';
+                   (idxPosta[sec.n + "_" + k] || 0) + '">' +
+                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+                   'stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/>' +
+                   '<path d="M12 9v4l2.5 2M9 1.5h6"/></svg>Cronómetro</button></div>';
         }
         h += '<div class="ex" data-ficha="' + (it[0] || "") + '">' + im +
              '<div><div class="exn">' + esc(it[1]) + '</div>' +
@@ -674,6 +778,10 @@ function vistaHoy() {
              '<button class="chk' + (on ? ' on' : '') + '" data-hecho="' + id + '">' +
              (on ? '✓' : '') + '</button></div>';
       });
+      const ids = sec.items.map((x, k) => sec.n + "_" + k);
+      const dur = duracionReal(sec.n, ids);
+      if (dur) h += '<div class="dur">' + esc(dur) + '</div>';
+      h += pieSeccion(sec.n, sec.titulo);
     } else if (sec.tipo === "lista") {
       h += tira(sec.fotos) +
            '<ul class="bul">' + sec.items.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul>';
@@ -735,22 +843,46 @@ function vistaSemana() {
   const i0 = bloqueDe(FECHA);
   let h = '<div class="top">' + anilloMini(FECHA) + '<span class="pill">' + i0.b.id +
           ' · ' + esc(i0.b.nombre) + '</span><span class="pill solid">Semana</span></div>';
+  const dom = suma(lunes, 6);
+  const rango = parse(lunes).getDate() + " " + MS[parse(lunes).getMonth()].slice(0, 3) +
+                " al " + parse(dom).getDate() + " " + MS[parse(dom).getMonth()].slice(0, 3);
   h += '<h1>La <span class="g">semana</span></h1><p class="sub">' + esc(i0.b.lema) + '</p>';
+
+  h += '<div class="daynav">' +
+       '<button data-sem="-7" aria-label="Semana anterior"><svg viewBox="0 0 24 24" fill="none" ' +
+       'stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>' +
+       '<div class="d">' + esc(rango) + '</div>' +
+       '<button data-sem="7" aria-label="Semana siguiente"><svg viewBox="0 0 24 24" fill="none" ' +
+       'stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>';
+
+  if (dias(lunes, HOY0) < 0 || dias(HOY0, dom) < 0)
+    h += '<button class="btn wide entrar" data-ir="' + HOY0 + '">Volver a hoy</button>';
+
   h += '<div class="week">';
   for (let k = 0; k < 7; k++) {
     const f = suma(lunes, k);
     const inf = bloqueDe(f);
-    const ses = D.micro[inf.b.id] ? D.micro[inf.b.id][wd(f)] : null;
+    const antes = dias(f, D.bloques[0].desde) > 0;
+    /* el mismo titulo que pinta la vista Hoy: el dia 1 es la sesion de
+       apertura, no el microciclo que le tocaria por dia de la semana */
+    const ses = antes ? null : sesionDe(f).base;
     const r = S.reg[f] || {};
     const d = r.manana;
     const cls = d === undefined || d === null ? "" : (d <= 1 ? "g" : (d <= 3 ? "a" : "r"));
-    h += '<div class="wd' + (f === FECHA ? ' on' : '') + '" data-ir="' + f + '">' +
-         '<div class="dd">' + DS[k].slice(0,3) + ' ' + parse(f).getDate() + '</div>' +
-         '<div class="tt">' + esc(ses ? ses.titulo : "fuera de plan") + '</div>' +
-         '<div class="dot ' + cls + '"></div></div>';
+    h += '<div class="wd' + (f === FECHA ? ' on' : '') + (f === HOY0 ? ' hoy' : '') +
+         (antes ? ' fuera' : '') + '" data-ir="' + f + '">' +
+         '<div class="dd">' + DS[k].slice(0,3) + ' ' + parse(f).getDate() +
+         (f === HOY0 ? ' · hoy' : '') + '</div>' +
+         '<div class="tt">' + esc(ses ? ses.titulo : (antes ? "antes de empezar" : "fuera de plan")) +
+         '</div><div class="dot ' + cls + '"></div></div>';
   }
   h += '</div>';
 
+  if (i0.antes) {
+    h += '<div class="note">El plan arranca el <span class="mono">' + D.bloques[0].desde +
+         '</span>. Los días anteriores no tienen sesión.</div>';
+    return h;
+  }
   h += '<div class="card" style="margin-top:14px"><div class="ch"><span class="cn">◆</span>' +
        '<h2 class="ct">Puerta de ' + i0.b.id + '</h2></div>' +
        '<p style="font-size:13.5px;color:var(--ink-3);margin:0 0 8px">Los criterios que abren el bloque ' +
@@ -838,6 +970,8 @@ function vistaDatos() {
   h += '<div class="note">Media de los días registrados: <span class="mono">' + med +
        '</span> · registrados <span class="mono">' + vals.length + ' de 30</span></div></div>';
 
+  h += porActividad();
+  h += tiemposReales();
   h += comoFunciona();
   const tm = S.cfg.tema || "auto";
   h += '<div class="card"><div class="ch"><span class="cn">◐</span>' +
@@ -899,10 +1033,23 @@ document.addEventListener("click", e => {
   if (!t) return;
   if (t.dataset.v) { VISTA = t.dataset.v; return render(); }
   if (t.dataset.nav) { FECHA = suma(FECHA, +t.dataset.nav); return render(); }
-  if (t.dataset.ir) { FECHA = t.dataset.ir; VISTA = "hoy"; return render(); }
+  if (t.dataset.sem) { FECHA = suma(FECHA, +t.dataset.sem); return render(); }
+  if (t.dataset.ir) {
+    FECHA = t.dataset.ir;
+    if (!t.classList.contains("entrar")) VISTA = "hoy";
+    return render();
+  }
   if (t.dataset.k) { setReg(t.dataset.f, t.dataset.k, +t.dataset.v); return render(); }
   if (t.dataset.hecho) {
     const r = S.reg[FECHA] = S.reg[FECHA] || {};
+    /* la hora se guarda sola: de ahi salen la duracion real de la sesion y
+       la de cada seccion, sin que haya que apuntar nada */
+    if (FECHA === HOY0) {
+      r.horas = r.horas || {};
+      const ahora = new Date();
+      r.horas[t.dataset.hecho] = String(ahora.getHours()).padStart(2, "0") + ":" +
+                                 String(ahora.getMinutes()).padStart(2, "0");
+    }
     r.hechos = r.hechos || [];
     const i = r.hechos.indexOf(t.dataset.hecho);
     if (i >= 0) r.hechos.splice(i, 1); else r.hechos.push(t.dataset.hecho);
@@ -973,6 +1120,14 @@ document.addEventListener("click", e => {
     document.getElementById("ga-slot").innerHTML = splashHTML();
     setTimeout(cierraSplash, 2600); return;
   }
+  if (t.dataset.sec) {
+    const [n, clave, v] = t.dataset.sec.split(":");
+    const r = S.reg[FECHA] = S.reg[FECHA] || {};
+    r.sec = r.sec || {};
+    r.sec[n] = r.sec[n] || {};
+    r.sec[n][clave] = r.sec[n][clave] === +v ? null : +v;   /* volver a tocar lo quita */
+    save(); return render();
+  }
   if (t.dataset.tema) { S.cfg.tema = t.dataset.tema; save(); aplicaTema(); return render(); }
   if (t.dataset.fs) { S.cfg.fs = t.dataset.fs; save(); aplicaTema(); return render(); }
   if (t.dataset.exp) { exporta(t.dataset.exp); return; }
@@ -995,6 +1150,12 @@ document.addEventListener("input", e => {
 });
 
 function cierraTimer(completo) {
+  if (T && T.nombre) {                    /* series reales, no las del papel */
+    const r = S.reg[FECHA] = S.reg[FECHA] || {};
+    r.series = r.series || {};
+    const hechas = completo ? T.series : Math.max(0, T.serie - 1);
+    if (hechas > 0) { r.series[T.nombre] = hechas + " de " + T.series; save(); }
+  }
   if (T && T.int) clearInterval(T.int);
   T = null;
   document.getElementById("tm").innerHTML = "";
@@ -1017,24 +1178,46 @@ function cierraTimer(completo) {
   render();
 }
 
+function cabeceraCSV() {
+  return "fecha,bloque,dia_bloque,sesion,dolor_reposo_0_10,dolor_durante_0_10," +
+    "dolor_post_entreno_0_10,dolor_dia_siguiente_0_10,tos_estornudo_0_10,squeeze_max_0_10," +
+    "isometrico_pct,zona_dolor,tareas_hechas,tareas_totales,cumplimiento_pct," +
+    "sueno_h,peso_kg,inicio,fin,duracion_min,molestia_por_actividad,esfuerzo_por_actividad," +
+    "series_reales,cargas,notas";
+}
+
 function exporta(tipo) {
   let txt, nom;
   if (tipo === "json") {
     txt = JSON.stringify(S, null, 1); nom = "readaptacion_copia.json";
   } else {
-    const cab = "fecha,bloque,dia_bloque,sesion,dolor_reposo_0_10,dolor_durante_0_10," +
-      "dolor_post_entreno_0_10,dolor_dia_siguiente_0_10,tos_estornudo_0_10,squeeze_max_0_10," +
-      "isometrico_pct,zona_dolor,tareas_hechas,tareas_totales,cumplimiento_pct,cargas,notas";
+    const cab = cabeceraCSV();
     const fs = Object.keys(S.reg).sort();
     const filas = fs.map(f => {
       const r = S.reg[f], s = sesionDe(f), p = progresoDe(f);
       const sig = S.reg[suma(f, 1)] ? S.reg[suma(f, 1)].manana : "";
       const v = x => (x === undefined || x === null) ? "" : x;
       const cg = Object.keys(r.cargas || {}).map(k => k + ":" + r.cargas[k]).join(" | ");
+      const sr = Object.keys(r.series || {}).map(k => k + ":" + r.series[k]).join(" | ");
+      const hs = Object.keys(r.horas || {}).map(k => r.horas[k]).sort();
+      const min = x => (+x.slice(0, 2)) * 60 + (+x.slice(3));
+      const dur = hs.length > 1 ? (min(hs[hs.length - 1]) - min(hs[0])) : "";
+      /* la molestia y el esfuerzo se guardan por numero de seccion: el CSV
+         lleva el nombre de la actividad para que se entienda fuera de la app */
+      const nom = {};
+      s.secs.forEach(x => { nom[x.n] = x.titulo; });
+      const sec = clave => Object.keys(r.sec || {})
+        .filter(n => (r.sec[n] || {})[clave] !== undefined && r.sec[n][clave] !== null)
+        .map(n => (nom[n] || n) + ":" +
+             (clave === "dolor" ? MOLESTIA[r.sec[n][clave]] : ESFUERZO[r.sec[n][clave]]))
+        .join(" | ");
       return [f, s.info.b.id, s.info.n, '"' + s.base.titulo + '"',
               v(r.manana), v(r.durante), v(r.acostar), v(sig), v(r.tos), v(r.squeeze),
               s.pct, '"' + (r.zona || "") + '"',
-              p.hechas, p.total, p.pct, '"' + cg + '"',
+              p.hechas, p.total, p.pct,
+              v(r.sueno), v(r.peso), hs[0] || "", hs[hs.length - 1] || "", dur,
+              '"' + sec("dolor") + '"', '"' + sec("rpe") + '"', '"' + sr + '"',
+              '"' + cg + '"',
               '"' + (r.notas || "").replace(/"/g, "'") + '"'].join(",");
     });
     txt = cab + "\\n" + filas.join("\\n"); nom = "dolor_24h.csv";
@@ -1046,7 +1229,8 @@ function exporta(tipo) {
 
 /* superficie de pruebas: la usa test/test.html */
 window.__t = {iso, parse, suma, dias, wd, bloqueDe, sesionDe, progresoDe, racha,
-              leeDosis, tareasDe,
+              leeDosis, tareasDe, FECHA_INICIAL: FECHA, FECHA_ACTUAL: () => FECHA,
+              cabeceraCSV,
               ultimaCarga, exporta, D, get S(){ return S; }, set S(x){ S = x; },
               setVista: v => { VISTA = v; render(); },
               setFecha: f => { FECHA = f; render(); },

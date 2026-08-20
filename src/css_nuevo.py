@@ -107,7 +107,8 @@ h1 .g{color:var(--ink-3);font-weight:400}
 
 /* -- modo entreno ------------------------------------------ */
 body.sin-scroll{overflow:hidden}
-.btn.mini{padding:.4rem .7rem;font-size:.72rem}
+.btn.mini{padding:.4rem .7rem;font-size:.72rem;gap:.3rem;white-space:nowrap}
+.btn.mini svg{width:.9rem;height:.9rem;stroke-width:2;flex:0 0 auto}
 .btn.entrar{margin:0 0 1.1rem;background:var(--accent);color:var(--on-accent);
   border-color:var(--accent);font-weight:640;font-size:1rem;padding:.95rem}
 .ent{position:fixed;inset:0;z-index:90;background:var(--bg);display:flex;flex-direction:column;
@@ -141,6 +142,26 @@ body.sin-scroll{overflow:hidden}
 .ent-r .btn{flex:1;min-height:var(--tap)}
 .ent-bot .btn.wide{min-height:3.4rem;font-size:1.05rem;font-weight:640}
 .ring.libre{border-color:var(--ink-4)}
+
+.wd.hoy{border-color:var(--ink-4)}
+.wd.fuera{opacity:.45}
+
+/* -- recogida de datos por seccion ------------------------- */
+.pie{border-top:1px solid var(--line);margin-top:.9rem;padding-top:.8rem;
+  display:flex;flex-direction:column;gap:.5rem}
+.pie-r{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.pie-r > span{font-size:.8rem;color:var(--ink-3);min-width:4.6rem}
+.chips{display:flex;gap:.35rem;flex:1;flex-wrap:wrap}
+.chip{flex:1;min-width:3.4rem;min-height:2.3rem;font-size:.8rem;font-weight:500;
+  border-radius:999px;border:1px solid var(--line);background:var(--surface-2);
+  color:var(--ink-2);padding:.3rem .5rem}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:640}
+.dur{font-size:.78rem;color:var(--ink-3);margin-top:.7rem;font-variant-numeric:tabular-nums}
+.dosn{display:flex;gap:.6rem;margin-top:.8rem}
+.dosn label{flex:1;display:flex;align-items:center;gap:.5rem}
+.dosn span{font-size:.8rem;color:var(--ink-3)}
+.dosn input{flex:1;min-width:0;text-align:center;padding:.55rem;border-radius:var(--r-s);
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink);font-size:1rem}
 
 /* ── superficies ──────────────────────────────────────────── */
 .card{
