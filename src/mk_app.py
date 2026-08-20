@@ -40,6 +40,13 @@ DATA = dict(bloques=BLOQUES, micro=MICRO, apertura=APERTURA, nutricion=NUTRICION
             momentos=MOMENTOS, iso=ISO, ej=EJ, img=IMGS)
 
 from css_nuevo import CSS  # noqa: E402
+import subprocess
+try:
+    _sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
+                                   cwd=os.path.dirname(HERE)).decode().strip()
+except Exception:
+    _sha = "local"
+VERSION = __import__("datetime").datetime.now().strftime("%d/%m %H:%M") + " · " + _sha
 
 HTML = """<!DOCTYPE html>
 <html lang="es">
@@ -656,6 +663,8 @@ function vistaDatos() {
          '</div></div>' +
          '<button class="chk" data-prol="' + b.id + ':-7">−</button>' +
          '<button class="chk" data-prol="' + b.id + ':7">+</button></div>').join("") +
+       '<div class="note">Versión instalada: <span class="mono">__VERSION__</span>. ' +
+       'Si no coincide con la última, cierra la app y ábrela otra vez con cobertura.</div>' +
        '<div class="note warn">Borrar los datos no se puede deshacer. ' +
        'Exporta antes.<br><button class="btn ghost wide" data-borrar="1">Borrar todo el historial</button></div></div>';
   return h;
@@ -847,7 +856,8 @@ render();
 """
 
 out = (HTML.replace("__CSS__", CSS)
-           .replace("__DATA__", json.dumps(DATA, ensure_ascii=False)))
+           .replace("__DATA__", json.dumps(DATA, ensure_ascii=False))
+           .replace("__VERSION__", VERSION))
 
 os.makedirs(os.path.dirname(DST), exist_ok=True)
 io.open(DST, "w", encoding="utf-8", newline="\n").write(out)
