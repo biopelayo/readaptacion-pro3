@@ -17,10 +17,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
-from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ  # noqa: E402
+from plan_data import BLOQUES, MICRO, NUTRICION, MOMENTOS, ISO, EJ, APERTURA  # noqa: E402
 
-DESDE = dt.date(2026, 8, 19)
-HASTA = dt.date(2026, 10, 25)
+DESDE = dt.date(2026, 8, 20)
+HASTA = dt.date(2026, 10, 28)
 DS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 MS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
       "septiembre", "octubre", "noviembre", "diciembre"]
@@ -42,7 +42,8 @@ def largo(f):
 
 def md_dia(f):
     b, n, desde, hasta = bloque_de(f)
-    ses = MICRO[b["id"]][f.weekday()]
+    ses = (APERTURA if (b["id"] == BLOQUES[0]["id"] and n == 1)
+           else MICRO[b["id"]][f.weekday()])
     tabla = b.get("iso", ISO)
     pct = tabla[min(max(n - 1, 0), len(tabla) - 1)]
     L = []
