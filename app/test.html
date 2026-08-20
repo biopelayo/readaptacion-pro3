@@ -403,6 +403,30 @@ document.getElementById("fr").onload = function () {
     return sin.length ? "sin aviso: " + sin.join(", ") : true;
   });
 
+  t("el anillo pequeno esta en la cabecera de las cuatro vistas", () => {
+    let n = 0;
+    ["hoy", "semana", "manual", "datos"].forEach(v => {
+      const b = w.document.querySelector('[data-v="' + v + '"]');
+      if (b) { b.click(); if (w.document.querySelector(".top .mini-anillo")) n++; }
+    });
+    w.document.querySelector('[data-v="hoy"]').click();
+    return n === 4 ? true : "solo aparece en " + n + " vistas";
+  });
+
+  t("el anillo pequeno abre la pantalla de arranque al tocarlo", () => {
+    const a = w.document.querySelector(".top .mini-anillo");
+    if (!a) return "no hay anillo";
+    a.click();
+    const hay = !!w.document.getElementById("sp");
+    if (hay) w.document.getElementById("sp").click();
+    return hay ? true : "no abrio";
+  });
+
+  t("no queda el reframe de la apertura", () => {
+    return w.document.documentElement.innerHTML.indexOf("Lo que cuenta hoy no es") < 0
+      ? true : "el texto sigue en el paquete";
+  });
+
   const res = document.getElementById("res");
   res.className = ko === 0 ? "good" : "bad";
   res.textContent = ko === 0

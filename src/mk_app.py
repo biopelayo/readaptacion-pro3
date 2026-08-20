@@ -270,6 +270,29 @@ function minutosDe(secs) {
   return m;
 }
 
+/* anillo pequeno de cabecera: el mismo dibujo del arranque, a 40 px */
+function anilloMini(fecha) {
+  const i = bloqueDe(fecha);
+  const B = D.bloques;
+  const idx = Math.max(0, B.findIndex(b => b.id === i.b.id));
+  const R = 15, C = 2 * Math.PI * R, hueco = 2.6;
+  const paso = C / B.length, largo = paso - hueco;
+  let a = "";
+  B.forEach((b, k) => {
+    const off = -k * paso;
+    a += '<circle class="b" cx="18" cy="18" r="' + R + '" stroke-width="3" ' +
+      'stroke-dasharray="' + largo + ' ' + (C - largo) + '" stroke-dashoffset="' + off + '"/>';
+    if (k < idx) a += '<circle class="y" cx="18" cy="18" r="' + R + '" stroke-width="3" ' +
+      'stroke-dasharray="' + largo + ' ' + (C - largo) + '" stroke-dashoffset="' + off + '"/>';
+  });
+  const frac = Math.max(0.05, Math.min(1, i.n / i.dur));
+  const vivo = largo * frac;
+  a += '<circle class="v" cx="18" cy="18" r="' + R + '" stroke-width="3" ' +
+    'stroke-dasharray="' + vivo + ' ' + (C - vivo) + '" stroke-dashoffset="' + (-idx * paso) + '"/>';
+  return '<div class="mini-anillo" data-abstract="1" title="' + esc(i.b.nombre) + '">' +
+    '<svg viewBox="0 0 36 36">' + a + '</svg><span>' + i.n + '</span></div>';
+}
+
 /* ── pantalla de arranque: el anillo de los cinco bloques ──── */
 function splashHTML() {
   const i = bloqueDe(HOY0);
@@ -396,8 +419,9 @@ function vistaHoy() {
   const i = s.info;
   let h = "";
 
-  h += '<div class="top"><span class="pill">' + i.b.id + ' · ' + esc(i.b.nombre) +
-       '</span><span class="pill solid">Día ' + i.n + ' de ' + i.b.dias + '</span></div>';
+  h += '<div class="top">' + anilloMini(FECHA) +
+       '<span class="pill">' + i.b.id + ' · ' + esc(i.b.nombre) + '</span>' +
+       '<span class="pill solid">Día ' + i.n + ' de ' + i.b.dur + '</span></div>';
 
   h += '<div class="daynav">' +
        '<button data-nav="-1" aria-label="Día anterior"><svg viewBox="0 0 24 24" fill="none" ' +
@@ -541,8 +565,8 @@ function vistaHoy() {
 function vistaSemana() {
   const lunes = suma(FECHA, -wd(FECHA));
   const i0 = bloqueDe(FECHA);
-  let h = '<div class="top"><span class="pill">' + i0.b.id + ' · ' +
-          esc(i0.b.nombre) + '</span><span class="pill solid">Semana</span></div>';
+  let h = '<div class="top">' + anilloMini(FECHA) + '<span class="pill">' + i0.b.id +
+          ' · ' + esc(i0.b.nombre) + '</span><span class="pill solid">Semana</span></div>';
   h += '<h1>La <span class="g">semana</span></h1><p class="sub">' + esc(i0.b.lema) + '</p>';
   h += '<div class="week">';
   for (let k = 0; k < 7; k++) {
@@ -576,7 +600,7 @@ function vistaSemana() {
 /* ── vista MANUAL ─────────────────────────────────────────── */
 let FILTRO = "";
 function vistaManual() {
-  let h = '<div class="top"><span class="pill">Manual de ejercicios</span>' +
+  let h = '<div class="top">' + anilloMini(FECHA) + '<span class="pill">Manual</span>' +
           '<span class="pill solid">' + Object.keys(D.ej).length + ' fichas</span></div>';
   h += '<h1>Cómo se hace <span class="g">cada cosa</span></h1>';
   h += '<input type="text" id="q" placeholder="Buscar ejercicio" value="' + esc(FILTRO) + '">';
@@ -603,7 +627,8 @@ function vistaManual() {
 function vistaDatos() {
   const fechas = Object.keys(S.reg).sort();
   const con = fechas.filter(f => S.reg[f].manana !== undefined && S.reg[f].manana !== null);
-  let h = '<div class="top"><span class="pill">Historial</span><span class="pill solid">' +
+  let h = '<div class="top">' + anilloMini(FECHA) +
+          '<span class="pill">Historial</span><span class="pill solid">' +
           con.length + ' días</span></div><h1>Tus <span class="g">datos</span></h1>';
 
   /* racha y cumplimiento de la semana */

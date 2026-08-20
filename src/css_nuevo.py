@@ -94,6 +94,17 @@ h1 .g{color:var(--ink-3);font-weight:400}
 }
 .tag.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
 
+/* ── anillo pequeño, siempre en la cabecera ───────────────── */
+.mini-anillo{width:2.5rem;height:2.5rem;flex:0 0 auto;cursor:pointer;position:relative;
+  display:flex;align-items:center;justify-content:center}
+.mini-anillo svg{width:100%;height:100%;transform:rotate(-90deg)}
+.mini-anillo .b{stroke:var(--line);fill:none}
+.mini-anillo .y{stroke:var(--ink-4);fill:none;stroke-linecap:round}
+.mini-anillo .v{stroke:var(--ink);fill:none;stroke-linecap:round}
+.mini-anillo span{position:absolute;font-size:.72rem;font-weight:700;color:var(--ink);
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.mini-anillo:active{transform:scale(.92)}
+
 /* ── superficies ──────────────────────────────────────────── */
 .card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);

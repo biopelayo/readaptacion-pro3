@@ -320,8 +320,8 @@ MICRO = {}
 # semaforo del protocolo no tiene con que decidir el resto del bloque.
 APERTURA = sesion(
     "Línea base y arranque",
-    "Lo que cuenta hoy no es el peso que muevas, son los cuatro números que dejes escritos "
-    "antes de empezar. Llevas ocho semanas sin ellos.",
+    "Apunta los cuatro números de la línea base antes de tocar una máquina. Llevas ocho "
+    "semanas sin ellos y el plan no puede decidir nada a ciegas.",
     [sec("01", "Línea base", "10 min · antes de nada", "test", []),
      sec("02", "Movilidad y activación", "20 min", "tabla", MOV_BASE),
      sec("03", "Gimnasio · Plan A empuje", "45 min · RIR 3", "tabla", PLAN_A[:7]),
